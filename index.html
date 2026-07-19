@@ -294,6 +294,21 @@
     .servicio { grid-template-columns: 42px 1fr; gap: 14px; }
     .foto::after { transform: translate(9px, 9px); }
   }
+
+  /* ---------- Revelado al scroll ---------- */
+  .rv {
+    opacity: 0;
+    transform: translateY(26px);
+    transition: opacity .7s cubic-bezier(.22,.61,.36,1), transform .7s cubic-bezier(.22,.61,.36,1);
+    transition-delay: var(--rvd, 0s);
+    will-change: opacity, transform;
+  }
+  .rv.visible { opacity: 1; transform: none; }
+  .foto.rv { transform: translateY(26px) scale(.985); }
+  .foto.rv.visible { transform: none; }
+  @media (prefers-reduced-motion: reduce) {
+    .rv { opacity: 1 !important; transform: none !important; transition: none !important; }
+  }
 </style>
 </head>
 <body>
@@ -525,8 +540,44 @@
     document.getElementById('panel-' + cual).classList.add('activa');
     document.getElementById('tab-' + cual).classList.add('activa');
     document.querySelector('.tabs-bar').scrollIntoView({behavior:'smooth'});
+    if (window.revelarPanel) window.revelarPanel(document.getElementById('panel-' + cual));
   }
 </script>
 
+<script>
+  (function(){
+    var sel = ['.section-label','h1','h2','.hero .sub','.credencial','.paleta','.hero-cta',
+               '.manifiesto blockquote','.manifiesto p','.senal','.diferencia p',
+               '.servicio','.paso','.b2b-card','.b2b-hero p','.b2b-galeria img',
+               '.contacto p','.contacto .btn','.foto','.b2b-cta .btn'];
+    var nodos = document.querySelectorAll(sel.join(','));
+    nodos.forEach(function(n){ n.classList.add('rv'); });
+
+    // Stagger: hermanos del mismo tipo dentro de un contenedor se retrasan en cascada
+    ['.senales','.pasos','.b2b-grid','.b2b-galeria .dos-col'].forEach(function(c){
+      document.querySelectorAll(c).forEach(function(cont){
+        Array.prototype.slice.call(cont.children).forEach(function(hijo, i){
+          (hijo.classList.contains('rv') ? hijo : hijo.querySelector('.rv') || hijo).style.setProperty('--rvd', (i * 90) + 'ms');
+        });
+      });
+    });
+
+    if (!('IntersectionObserver' in window)) {
+      nodos.forEach(function(n){ n.classList.add('visible'); });
+      return;
+    }
+    var io = new IntersectionObserver(function(entries){
+      entries.forEach(function(e){
+        if (e.isIntersecting) { e.target.classList.add('visible'); io.unobserve(e.target); }
+      });
+    }, { threshold: 0.12, rootMargin: '0px 0px -6% 0px' });
+    nodos.forEach(function(n){ io.observe(n); });
+
+    // Al cambiar de tab, revelar de inmediato lo visible del panel nuevo
+    window.revelarPanel = function(panel){
+      panel.querySelectorAll('.rv:not(.visible)').forEach(function(n){ io.observe(n); });
+    };
+  })();
+</script>
 </body>
 </html>
