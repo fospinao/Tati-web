@@ -210,7 +210,18 @@
     border: 1px solid rgba(61,44,58,.22);
     border-radius: 20px;
   }
-  .servicio .precio { margin-top: 14px; font-family: 'Cormorant Garamond', serif; font-size: 21px; color: var(--oro); }
+  .servicio .hablemos {
+    display: inline-flex; align-items: center; gap: 8px;
+    margin-top: 18px; padding: 11px 24px;
+    font-size: 12.5px; font-weight: 500;
+    letter-spacing: .14em; text-transform: uppercase;
+    color: var(--ciruela); text-decoration: none;
+    border: 1px solid var(--ciruela); border-radius: 2px;
+    transition: background .25s, color .25s, border-color .25s;
+  }
+  .servicio .hablemos::after { content: '→'; transition: transform .25s; }
+  .servicio .hablemos:hover { background: var(--rosa); border-color: var(--rosa); color: var(--blanco); }
+  .servicio .hablemos:hover::after { transform: translateX(4px); }
   .servicio.destacado { background: var(--marfil); margin: 0 -28px; padding: 34px 28px; border-radius: 4px; }
   .badge {
     font-size: 10.5px; letter-spacing: .2em; text-transform: uppercase;
@@ -398,7 +409,7 @@
         <h3>Proceso de Coaching de Imagen <span class="badge">El más elegido</span></h3>
         <p class="desc">El servicio insignia: identidad, cuerpo y apariencia trabajados con el Método de Coaching de Imagen©. No sales con un "look nuevo" — sales con una imagen que te pertenece.</p>
         <div class="detalle"><span>Proceso de varias sesiones</span><span>Acompañamiento entre sesiones</span></div>
-        <div class="precio">$X.XXX.XXX COP</div>
+        <a class="hablemos" href="https://wa.me/573176912708?text=Hola%20Tati%2C%20me%20interesa%20el%20Proceso%20de%20Coaching%20de%20Imagen.%20%C2%BFMe%20cuentas%20c%C3%B3mo%20funciona%3F" target="_blank" rel="noopener">Hablemos</a>
       </div>
     </article>
 
@@ -408,7 +419,7 @@
         <h3>Sesión de Descubrimiento <span class="chips" aria-hidden="true"><i style="background:#C4909B"></i><i style="background:#A98E5F"></i><i style="background:#E3C6B8"></i></span></h3>
         <p class="desc">Colorimetría, morfología y momento de vida en una sesión: sales con claridad inmediata sobre qué te favorece y por qué.</p>
         <div class="detalle"><span>2 horas</span><span>Guía en PDF</span></div>
-        <div class="precio">$XXX.XXX COP</div>
+        <a class="hablemos" href="https://wa.me/573176912708?text=Hola%20Tati%2C%20me%20interesa%20la%20Sesi%C3%B3n%20de%20Descubrimiento.%20%C2%BFMe%20cuentas%20c%C3%B3mo%20funciona%3F" target="_blank" rel="noopener">Hablemos</a>
       </div>
     </article>
 
@@ -418,7 +429,7 @@
         <h3>Asesoría de Imagen Integral <span class="chips" aria-hidden="true"><i style="background:#3D2C3A"></i><i style="background:#C4909B"></i><i style="background:#DCCDA8"></i></span></h3>
         <p class="desc">Colorimetría, estilo y guardarropa en un proceso de varias semanas. Un sistema claro para vestirte cada día sin dudar frente al espejo.</p>
         <div class="detalle"><span>4 sesiones</span><span>Manual de estilo</span><span>Acompañamiento por WhatsApp</span></div>
-        <div class="precio">$X.XXX.XXX COP</div>
+        <a class="hablemos" href="https://wa.me/573176912708?text=Hola%20Tati%2C%20me%20interesa%20la%20Asesor%C3%ADa%20de%20Imagen%20Integral.%20%C2%BFMe%20cuentas%20c%C3%B3mo%20funciona%3F" target="_blank" rel="noopener">Hablemos</a>
       </div>
     </article>
 
@@ -428,7 +439,7 @@
         <h3>Clóset Detox <span class="chips" aria-hidden="true"><i style="background:#8A9186"></i><i style="background:#E3C6B8"></i><i style="background:#A98E5F"></i></span></h3>
         <p class="desc">Tu guardarropa pieza por pieza: qué se queda, qué se va, qué falta. Descubres que necesitas comprar mucho menos de lo que creías.</p>
         <div class="detalle"><span>3 horas</span><span>Presencial o virtual</span><span>Lista de compras inteligente</span></div>
-        <div class="precio">$XXX.XXX COP</div>
+        <a class="hablemos" href="https://wa.me/573176912708?text=Hola%20Tati%2C%20me%20interesa%20el%20Cl%C3%B3set%20Detox.%20%C2%BFMe%20cuentas%20c%C3%B3mo%20funciona%3F" target="_blank" rel="noopener">Hablemos</a>
       </div>
     </article>
 
@@ -438,7 +449,7 @@
         <h3>Personal Shopping <span class="chips" aria-hidden="true"><i style="background:#4E5D63"></i><i style="background:#C4909B"></i><i style="background:#DCCDA8"></i></span></h3>
         <p class="desc">Compramos juntas, con estrategia: lista clara según tu colorimetría, tu silueta y tu presupuesto. Piezas que vas a usar de verdad.</p>
         <div class="detalle"><span>Media jornada</span><span>Ruta planificada</span></div>
-        <div class="precio">$XXX.XXX COP</div>
+        <a class="hablemos" href="https://wa.me/573176912708?text=Hola%20Tati%2C%20me%20interesa%20el%20servicio%20de%20Personal%20Shopping.%20%C2%BFMe%20cuentas%20c%C3%B3mo%20funciona%3F" target="_blank" rel="noopener">Hablemos</a>
       </div>
     </article>
   </div>
