@@ -213,7 +213,7 @@
 
     <div class="ajustes">
       <span>Acomoda tu foto: arrástrala · Zoom</span>
-      <input type="range" id="zoom" min="100" max="250" value="100">
+      <input type="range" id="zoom" min="100" max="300" value="100">
       <button id="otraFoto">Cambiar foto</button>
     </div>
 
@@ -310,12 +310,33 @@
         document.getElementById('zonaCarga').style.display = 'none';
         document.getElementById('estudio').style.display = 'block';
         document.getElementById('zoom').value = 100;
+        autoEncuadre(im);
         pintarTodo();
         window.scrollTo({top: document.getElementById('estudio').offsetTop - 10, behavior:'smooth'});
       };
       im.src = ev.target.result;
     };
     lector.readAsDataURL(f);
+  }
+
+  // ══ Auto-encuadre: detecta el rostro y acomoda la foto para que el paño caiga bajo el mentón ══
+  function autoEncuadre(im){
+    try {
+      if(!window._faceDetector) return;
+      var res = window._faceDetector.detect(im);
+      if(!res || !res.detections || !res.detections.length) return;
+      var bb = res.detections[0].boundingBox;
+      var base0 = Math.max(W/im.width, H/im.height);
+      var s = (W * 0.34) / (bb.width * base0);
+      s = Math.max(1, Math.min(3, s));
+      vista.scale = s;
+      var dw = im.width*base0*s, dh = im.height*base0*s;
+      var xc = bb.originX + bb.width/2;
+      var yMenton = bb.originY + bb.height*1.03;
+      vista.ox = W*0.5  - (W-dw)/2 - xc*base0*s;
+      vista.oy = H*0.50 - (H-dh)/2 - yMenton*base0*s;
+      document.getElementById('zoom').value = Math.round(s*100);
+    } catch(e){ /* sin detección: encuadre manual */ }
   }
 
   var inGal = document.getElementById('archivo');
@@ -340,53 +361,30 @@
     ctx.drawImage(img, x, y, dw, dh);
   }
 
+  // Textura de tela real (gris + alfa) que se tiñe del color elegido
+  var pano = new Image();
+  var panoListo = false;
+  pano.onload = function(){ panoListo = true; pintarTodo(); };
+  pano.src = 'assets/pano.png';
+  var off = document.createElement('canvas');
+
   function dibujarPano(ctx, color){
-    if(!color) return;
-    var t = H*0.60;          // altura hombros
-    var u = H*0.705;         // fondo del escote
-    ctx.save();
-    // cuerpo del paño
-    ctx.beginPath();
-    ctx.moveTo(-20, H+20);
-    ctx.lineTo(-20, t+H*0.02);
-    ctx.quadraticCurveTo(W*0.16, t-H*0.015, W*0.30, t+H*0.022);
-    ctx.quadraticCurveTo(W*0.50, u, W*0.70, t+H*0.022);
-    ctx.quadraticCurveTo(W*0.84, t-H*0.015, W+20, t+H*0.02);
-    ctx.lineTo(W+20, H+20);
-    ctx.closePath();
-    ctx.fillStyle = color;
-    ctx.fill();
-    ctx.clip();
-    // sombreado general (profundidad de tela)
-    var g = ctx.createLinearGradient(0, t-20, 0, H);
-    g.addColorStop(0, 'rgba(0,0,0,0.20)');
-    g.addColorStop(0.18, 'rgba(0,0,0,0.02)');
-    g.addColorStop(0.75, 'rgba(0,0,0,0.10)');
-    ctx.fillStyle = g; ctx.fillRect(0, t-30, W, H);
-    // pliegues
-    function pliegue(x0, cx, alpha){
-      ctx.beginPath();
-      ctx.moveTo(x0, t+10);
-      ctx.quadraticCurveTo(cx, (t+H)/2, x0+W*0.03, H+10);
-      ctx.lineTo(x0+W*0.10, H+10);
-      ctx.quadraticCurveTo(cx+W*0.08, (t+H)/2, x0+W*0.09, t+14);
-      ctx.closePath();
-      ctx.fillStyle = 'rgba(0,0,0,'+alpha+')';
-      ctx.fill();
-    }
-    pliegue(W*0.16, W*0.13, 0.06);
-    pliegue(W*0.46, W*0.46, 0.05);
-    pliegue(W*0.72, W*0.78, 0.06);
-    // brillo del borde superior
-    ctx.beginPath();
-    ctx.moveTo(-20, t+H*0.02);
-    ctx.quadraticCurveTo(W*0.16, t-H*0.015, W*0.30, t+H*0.022);
-    ctx.quadraticCurveTo(W*0.50, u, W*0.70, t+H*0.022);
-    ctx.quadraticCurveTo(W*0.84, t-H*0.015, W+20, t+H*0.02);
-    ctx.strokeStyle = 'rgba(255,255,255,0.30)';
-    ctx.lineWidth = 4;
-    ctx.stroke();
-    ctx.restore();
+    if(!color || !panoListo) return;
+    var dw = W * 1.22;
+    var dh = dw * (pano.height / pano.width);
+    var dx = (W - dw) / 2;
+    var dy = H + 12 - dh;                 // anclado al borde inferior
+    off.width = Math.round(dw); off.height = Math.round(dh);
+    var o = off.getContext('2d');
+    o.clearRect(0,0,off.width,off.height);
+    o.drawImage(pano, 0, 0, off.width, off.height);
+    o.globalCompositeOperation = 'multiply';
+    o.fillStyle = color;
+    o.fillRect(0, 0, off.width, off.height);
+    o.globalCompositeOperation = 'destination-in';
+    o.drawImage(pano, 0, 0, off.width, off.height);
+    o.globalCompositeOperation = 'source-over';
+    ctx.drawImage(off, dx, dy);
   }
 
   function pintar(ctx, color){ dibujarFoto(ctx); dibujarPano(ctx, color); }
@@ -533,6 +531,16 @@
     }, 'image/jpeg', 0.92);
   });
 })();
+</script>
+<script type="module">
+try {
+  const vision = await import('https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.14/vision_bundle.mjs');
+  const fileset = await vision.FilesetResolver.forVisionTasks('https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.14/wasm');
+  window._faceDetector = await vision.FaceDetector.createFromOptions(fileset, {
+    baseOptions: { modelAssetPath: 'https://storage.googleapis.com/mediapipe-models/face_detector/blaze_face_short_range/float16/1/blaze_face_short_range.tflite' },
+    runningMode: 'IMAGE'
+  });
+} catch(e) { /* si falla, el estudio funciona con encuadre manual */ }
 </script>
 </body>
 </html>
