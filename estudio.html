@@ -177,6 +177,18 @@
   .webcam .fila{display:flex;gap:12px}
   .webcam .btn-carga.sec{color:var(--marfil);border-color:rgba(247,244,239,.6)}
   .webcam .btn-carga.sec:hover{background:var(--marfil);color:var(--ciruela)}
+
+  .registro{position:fixed;inset:0;z-index:210;background:rgba(61,44,58,.72);display:none;align-items:center;justify-content:center;padding:18px}
+  .registro.ver{display:flex}
+  .rg-caja{background:var(--marfil);border-radius:8px;padding:26px 22px;max-width:420px;width:100%;box-shadow:0 20px 50px rgba(0,0,0,.25)}
+  .rg-caja h3{font-size:26px;margin-bottom:6px}
+  .rg-caja p{font-size:13.5px;color:var(--grafito);margin-bottom:16px}
+  .rg-caja input[type=text],.rg-caja input[type=email],.rg-caja input[type=tel]{width:100%;font-family:'Jost';font-size:15px;padding:12px 14px;margin-bottom:10px;border:1px solid rgba(61,44,58,.25);border-radius:4px;background:#fff;color:var(--ciruela)}
+  .rg-caja input:focus{outline:none;border-color:var(--rosa)}
+  .rg-check{display:flex;gap:9px;align-items:flex-start;font-size:12px;color:var(--grafito);line-height:1.45;margin:6px 0 4px;cursor:pointer}
+  .rg-check input{margin-top:2px;accent-color:var(--rosa)}
+  .rg-error{color:#8E1B2F;font-size:13px;min-height:1.2em;margin:6px 0}
+  .rg-caja .fila{display:flex;gap:10px;flex-wrap:wrap}
 </style>
 </head>
 <body>
@@ -211,6 +223,22 @@
     </div>
   </div>
   <input type="file" id="archivo" accept="image/*" style="position:fixed;left:-9999px;top:0;width:1px;height:1px;opacity:0">
+  <div class="registro" id="registro">
+    <div class="rg-caja">
+      <h3>Antes de tu prueba con IA</h3>
+      <p>Déjanos tus datos para enviarte tu resultado y recomendaciones de Tati.</p>
+      <input id="rgNombre" type="text" placeholder="Nombre" autocomplete="name">
+      <input id="rgCiudad" type="text" placeholder="Ciudad" autocomplete="address-level2">
+      <input id="rgCorreo" type="email" placeholder="Correo" autocomplete="email">
+      <input id="rgTel" type="tel" placeholder="Teléfono / WhatsApp" autocomplete="tel">
+      <label class="rg-check"><input id="rgAutoriza" type="checkbox"> Autorizo a Tati González a tratar mis datos para contactarme sobre sus servicios, conforme a la Ley 1581 de 2012.</label>
+      <div class="rg-error" id="rgError"></div>
+      <div class="fila">
+        <button type="button" class="btn-carga" id="rgEnviar">Continuar</button>
+        <button type="button" class="btn-carga sec" id="rgCancelar">Cancelar</button>
+      </div>
+    </div>
+  </div>
   <div class="webcam" id="webcam">
     <video id="webcamVideo" autoplay playsinline muted></video>
     <div class="fila">
@@ -616,13 +644,38 @@
     return c.toDataURL('image/jpeg',0.85).split(',')[1];
   }
 
-  function hoyUsos(){
-    try{ var k='tg-ia-'+new Date().toISOString().slice(0,10); return [k, parseInt(localStorage.getItem(k)||'0',10)]; }
-    catch(e){ return ['',0]; }
-  }
 
   var elIAEstado=document.getElementById('iaEstado'), btnIA=document.getElementById('btnIA'), elCarga=document.getElementById('cargandoIA');
   function estadoIA(t,err){ elIAEstado.textContent=t||''; elIAEstado.classList.toggle('err',!!err); }
+
+  // ══ Registro de usuarias → Google Sheets ══
+  var HOJA_URL = '';   // URL de la aplicación web de Apps Script
+  function enviarHoja(datos){
+    if(!HOJA_URL) return;
+    try{ fetch(HOJA_URL, {method:'POST', mode:'no-cors', headers:{'Content-Type':'text/plain;charset=utf-8'}, body:JSON.stringify(datos)}); }catch(e){}
+  }
+  function miRegistro(){ try{ return JSON.parse(localStorage.getItem('tg-registro')||'null'); }catch(e){ return null; } }
+  var elReg=document.getElementById('registro');
+  function abrirRegistro(){ elReg.classList.add('ver'); document.getElementById('rgNombre').focus(); }
+  document.getElementById('rgCancelar').addEventListener('click', function(){ elReg.classList.remove('ver'); });
+  document.getElementById('rgEnviar').addEventListener('click', function(){
+    var v=function(id){ return document.getElementById(id).value.trim(); };
+    var datos={tipo:'registro', nombre:v('rgNombre'), ciudad:v('rgCiudad'), correo:v('rgCorreo').toLowerCase(),
+               telefono:v('rgTel'), autoriza:document.getElementById('rgAutoriza').checked};
+    var err='';
+    if(datos.nombre.length<2) err='Escribe tu nombre.';
+    else if(datos.ciudad.length<2) err='Escribe tu ciudad.';
+    else if(!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(datos.correo)) err='Revisa tu correo.';
+    else if(datos.telefono.replace(/\D/g,'').length<7) err='Revisa tu teléfono.';
+    else if(!datos.autoriza) err='Necesitamos tu autorización para continuar.';
+    var elE=document.getElementById('rgError');
+    if(err){ elE.textContent=err; return; }
+    elE.textContent='';
+    enviarHoja(datos);
+    try{ localStorage.setItem('tg-registro', JSON.stringify({nombre:datos.nombre, correo:datos.correo})); }catch(e){}
+    elReg.classList.remove('ver');
+    btnIA.click();
+  });
 
   btnIA.addEventListener('click', function(){
     if(modoIA){ // volver a instantánea
@@ -631,8 +684,8 @@
       btnIA.classList.remove('sec'); estadoIA(''); pintarTodo(); return;
     }
     if(ia){ activarIA(); return; }
-    var u=hoyUsos();
-    if(u[1]>=5){ estadoIA('Llegaste al límite de 5 pruebas con IA por hoy. Mañana puedes volver a intentarlo, o escríbele a Tati para tu análisis completo.', true); return; }
+    var reg=miRegistro();
+    if(!reg){ abrirRegistro(); return; }
     btnIA.disabled=true; elCarga.classList.add('ver'); estadoIA('');
     var ctrl=('AbortController' in window)? new AbortController():null;
     var tm=setTimeout(function(){ if(ctrl) ctrl.abort(); }, 70000);
@@ -650,7 +703,7 @@
       var p=prepararIA(im);
       if(!p) throw new Error('La IA no logró colocar el paño en esta foto. Prueba con una foto de frente, con los hombros visibles.');
       ia=p; iaCache={};
-      if(u[0]) try{ localStorage.setItem(u[0], String(u[1]+1)); }catch(e){}
+      enviarHoja({tipo:'uso', correo:reg.correo, accion:'Generación IA'});
       activarIA();
     })
     .catch(function(e){
