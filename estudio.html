@@ -343,7 +343,7 @@
       im.onerror = function(){ mostrarError('No pude abrir esa imagen. Si es una foto de iPhone en formato HEIC, toma un pantallazo de la foto y sube el pantallazo.'); };
       im.onload = function(){
         img = im; vista = {scale:1, ox:0, oy:0};
-        ia = null; iaCache = {}; modoIA = false;
+        ia = null; iaCache = {}; modoIA = false; ultimaCara = null;
         var bI=document.getElementById('btnIA'); if(bI){ bI.textContent='Generar mi paño realista'; bI.classList.remove('sec'); }
         var eI=document.getElementById('iaEstado'); if(eI){ eI.textContent=''; }
         document.getElementById('zonaCarga').style.display = 'none';
@@ -351,7 +351,11 @@
         document.getElementById('zoom').value = 100;
         usuarioMovio = false;
         pintarTodo();
-        conDetector(function(){ if(img===im && !modoIA && !usuarioMovio){ autoEncuadre(im, false); pintarTodo(); } });
+        conDetector(function(){
+          if(img!==im) return;
+          if(!modoIA && !usuarioMovio){ autoEncuadre(im, false); pintarTodo(); }
+          else { try{ var c=caraValida(window._faceDetector.detect(im), im); if(c){ c.ar=im.width/im.height; ultimaCara=c; } }catch(e){} }
+        });
         window.scrollTo({top: document.getElementById('estudio').offsetTop - 10, behavior:'smooth'});
       };
       im.src = ev.target.result;
@@ -367,30 +371,40 @@
     vista.ox = Math.max(-mx, Math.min(mx, vista.ox));
     vista.oy = Math.max(-my, Math.min(my, vista.oy));
   }
+  var ultimaCara = null; // cara de la foto original, normalizada 0-1 {x,y,w,h,ar}
+  function caraValida(res, im){
+    if(!res || !res.detections || !res.detections.length) return null;
+    var mejor=null, area=0;
+    res.detections.forEach(function(d){
+      var b=d.boundingBox, a=b.width*b.height;
+      if(a>area){ area=a; mejor=b; }
+    });
+    if(!mejor) return null;
+    var fw = mejor.width/im.width;
+    if(fw < 0.08 || fw > 0.95) return null;       // descarta detecciones absurdas
+    return {x:mejor.originX/im.width, y:mejor.originY/im.height, w:fw, h:mejor.height/im.height};
+  }
   function autoEncuadre(im, esIA){
-    try {
-      if(!window._faceDetector) return false;
-      var res = window._faceDetector.detect(im);
-      if(!res || !res.detections || !res.detections.length) return false;
-      var bb = res.detections[0].boundingBox;
-      var base0 = Math.max(W/im.width, H/im.height);
-      var s = (W * (esIA ? 0.40 : 0.36)) / (bb.width * base0);
-      s = Math.max(1, Math.min(esIA ? 2.5 : 3, s));
-      vista.scale = s;
-      var dw = im.width*base0*s, dh = im.height*base0*s;
-      var xc = bb.originX + bb.width/2;
-      vista.ox = W*0.5 - (W-dw)/2 - xc*base0*s;
-      if(esIA){
-        var yc = bb.originY + bb.height*0.5;
-        vista.oy = H*0.36 - (H-dh)/2 - yc*base0*s;
-      } else {
-        var yMenton = bb.originY + bb.height*1.03;
-        vista.oy = H*0.44 - (H-dh)/2 - yMenton*base0*s;
-      }
-      limitarVista(im.width, im.height);
-      document.getElementById('zoom').value = Math.round(s*100);
-      return true;
-    } catch(e){ return false; }
+    var cara = null;
+    try { if(window._faceDetector) cara = caraValida(window._faceDetector.detect(im), im); } catch(e){}
+    var ar = im.width/im.height;
+    if(!esIA && cara){ cara.ar = ar; ultimaCara = cara; }
+    if(esIA && ultimaCara && Math.abs(ultimaCara.ar - ar) < 0.08){
+      cara = ultimaCara;                            // la IA conserva el encuadre: usar la cara original
+    }
+    if(!cara) return false;
+    var bw = cara.w*im.width, bx = cara.x*im.width, by = cara.y*im.height, bh = cara.h*im.height;
+    var base0 = Math.max(W/im.width, H/im.height);
+    var s = (W * (esIA ? 0.34 : 0.36)) / (bw * base0);
+    s = Math.max(1, Math.min(esIA ? 1.8 : 3, s));
+    vista.scale = s;
+    var dw = im.width*base0*s, dh = im.height*base0*s;
+    vista.ox = W*0.5 - (W-dw)/2 - (bx + bw/2)*base0*s;
+    if(esIA) vista.oy = H*0.33 - (H-dh)/2 - (by + bh*0.5)*base0*s;
+    else     vista.oy = H*0.44 - (H-dh)/2 - (by + bh*1.03)*base0*s;
+    limitarVista(im.width, im.height);
+    document.getElementById('zoom').value = Math.round(s*100);
+    return true;
   }
   // Ejecuta fn apenas el detector esté listo (si ya está, de inmediato)
   function conDetector(fn){
@@ -484,7 +498,7 @@
       v = g>40 ? (g-m)/g : 0;
       alpha[i]=suave(0.22,0.45,v);
       if(alpha[i]>0.95) greens.push(g);
-      if(alpha[i]>0 && alpha[i]<1){ base[i*4+1]=Math.min(g,m+4); } // quitar reflejo verde en bordes
+      if(v>0.03 && alpha[i]<1){ base[i*4+1]=Math.min(g, m+2); } // quitar reflejo verde en bordes, barba y pelo
     }
     if(greens.length < n*0.03) return null;
     greens.sort(function(a,b){return a-b;});
