@@ -155,6 +155,21 @@
   .aviso-error.ver{display:block}
   .aviso-navegador{display:none;margin-top:12px;font-size:13px;color:var(--ciruela);background:#fdf6e8;border:1px solid #e8d9b5;border-radius:4px;padding:12px 14px;line-height:1.5}
   .aviso-navegador.ver{display:block}
+
+  /* Modo IA */
+  .ia-caja{max-width:560px;margin:14px auto 0;text-align:center;background:var(--blanco);border:1px solid rgba(196,144,155,.45);border-radius:6px;padding:16px 18px}
+  .ia-caja b{font-family:'Cormorant Garamond',serif;font-size:21px;font-weight:500;display:block;margin-bottom:4px}
+  .ia-caja p{font-size:13px;color:var(--grafito);margin-bottom:12px}
+  .btn-ia{font-family:'Jost';font-size:12.5px;font-weight:500;letter-spacing:.12em;text-transform:uppercase;padding:13px 24px;border-radius:2px;border:1px solid var(--rosa);background:var(--rosa);color:#fff;cursor:pointer;transition:all .25s}
+  .btn-ia:hover{background:var(--ciruela);border-color:var(--ciruela)}
+  .btn-ia[disabled]{opacity:.55;cursor:wait}
+  .btn-ia.sec{background:none;color:var(--ciruela);border-color:rgba(61,44,58,.35)}
+  .ia-estado{font-size:12.5px;margin-top:10px;color:var(--grafito);min-height:1em}
+  .ia-estado.err{color:#8E1B2F}
+  .cargando{position:absolute;inset:0;display:none;align-items:center;justify-content:center;flex-direction:column;gap:12px;background:rgba(247,244,239,.82);border-radius:4px;font-size:13px;color:var(--ciruela);text-align:center;padding:20px}
+  .cargando.ver{display:flex}
+  .cargando i{width:34px;height:34px;border:3px solid rgba(196,144,155,.35);border-top-color:var(--rosa);border-radius:50%;animation:gira 1s linear infinite}
+  @keyframes gira{to{transform:rotate(360deg)}}
 </style>
 </head>
 <body>
@@ -169,7 +184,7 @@
     <div class="eyebrow">Experiencia gratuita</div>
     <h1>Tu estudio de color <em>online</em></h1>
     <p>Sube una foto tuya y prueba más de 70 tonos sobre ti, como los paños de una sesión de colorimetría real. Fíjate cuáles te iluminan el rostro… y cuáles te apagan.</p>
-    <div class="privacidad">🔒 Tu foto nunca sale de tu celular — todo pasa aquí mismo, no se sube a ningún servidor</div>
+    <div class="privacidad">🔒 La prueba instantánea ocurre en tu celular. Solo si eliges la versión con IA, tu foto se procesa con Google y no se guarda</div>
   </section>
 
   <!-- Carga -->
@@ -202,6 +217,7 @@
       <div class="marco activo" id="marcoA">
         <canvas id="cvA" width="600" height="780"></canvas>
         <div class="etq" id="etqA">Elige un tono ↓</div>
+        <div class="cargando" id="cargandoIA"><i></i><span>Creando tu paño realista…<br>tarda unos 10 a 20 segundos</span></div>
         <button class="fav" id="favA" title="Guardar en favoritos">♡</button>
       </div>
       <div class="marco" id="marcoB">
@@ -209,6 +225,13 @@
         <div class="etq" id="etqB">Toca este lado y elige otro tono</div>
         <button class="fav" id="favB" title="Guardar en favoritos">♡</button>
       </div>
+    </div>
+
+    <div class="ia-caja" id="iaCaja">
+      <b>✨ Prueba realista con IA</b>
+      <p>La inteligencia artificial viste tu foto con un paño real, con pliegues y caída natural, y luego lo cambias a cualquier tono. Para esto tu foto se envía a Google para procesarla; no se guarda.</p>
+      <button type="button" class="btn-ia" id="btnIA">Generar mi paño realista</button>
+      <div class="ia-estado" id="iaEstado"></div>
     </div>
 
     <div class="ajustes">
@@ -307,6 +330,9 @@
       im.onerror = function(){ mostrarError('No pude abrir esa imagen. Si es una foto de iPhone en formato HEIC, toma un pantallazo de la foto y sube el pantallazo.'); };
       im.onload = function(){
         img = im; vista = {scale:1, ox:0, oy:0};
+        ia = null; iaCache = {}; modoIA = false;
+        var bI=document.getElementById('btnIA'); if(bI){ bI.textContent='Generar mi paño realista'; bI.classList.remove('sec'); }
+        var eI=document.getElementById('iaEstado'); if(eI){ eI.textContent=''; }
         document.getElementById('zonaCarga').style.display = 'none';
         document.getElementById('estudio').style.display = 'block';
         document.getElementById('zoom').value = 100;
@@ -387,7 +413,123 @@
     ctx.drawImage(off, dx, dy);
   }
 
-  function pintar(ctx, color){ dibujarFoto(ctx); dibujarPano(ctx, color); }
+  // ══ Modo IA: una generación con paño verde croma → máscara + sombreado → cualquier tono ══
+  var WORKER = 'https://tati-estudio.felipe-c26.workers.dev';
+  var ia = null;            // {w,h,base:Uint8ClampedArray,alpha:Float32Array,shade:Float32Array}
+  var iaCache = {};         // color → canvas teñido
+  var modoIA = false;
+
+  function hexRgb(h){ var n=parseInt(h.slice(1),16); return [(n>>16)&255,(n>>8)&255,n&255]; }
+  function suave(a,b,x){ var t=Math.min(1,Math.max(0,(x-a)/(b-a))); return t*t*(3-2*t); }
+
+  function prepararIA(im){
+    var c=document.createElement('canvas'); c.width=im.width; c.height=im.height;
+    var x=c.getContext('2d'); x.drawImage(im,0,0);
+    var d=x.getImageData(0,0,c.width,c.height).data, n=c.width*c.height;
+    var alpha=new Float32Array(n), shade=new Float32Array(n), base=new Uint8ClampedArray(d);
+    var greens=[], i, r,g,b,m,v;
+    for(i=0;i<n;i++){
+      r=d[i*4]; g=d[i*4+1]; b=d[i*4+2]; m=Math.max(r,b);
+      v = g>40 ? (g-m)/g : 0;
+      alpha[i]=suave(0.22,0.45,v);
+      if(alpha[i]>0.95) greens.push(g);
+      if(alpha[i]>0 && alpha[i]<1){ base[i*4+1]=Math.min(g,m+4); } // quitar reflejo verde en bordes
+    }
+    if(greens.length < n*0.03) return null;
+    greens.sort(function(a,b){return a-b;});
+    var ref=greens[Math.floor(greens.length*0.92)]||255;
+    for(i=0;i<n;i++){ if(alpha[i]>0) shade[i]=Math.min(1.35, d[i*4+1]/ref); }
+    return {w:c.width,h:c.height,base:base,alpha:alpha,shade:shade};
+  }
+
+  function tenirIA(color){
+    if(iaCache[color]) return iaCache[color];
+    var c=document.createElement('canvas'); c.width=ia.w; c.height=ia.h;
+    var x=c.getContext('2d'), out=x.createImageData(ia.w,ia.h), o=out.data, B=ia.base;
+    var rgb=hexRgb(color), n=ia.w*ia.h, i,a,s,k,lift,j;
+    for(i=0;i<n;i++){
+      j=i*4; a=ia.alpha[i];
+      if(a<=0){ o[j]=B[j];o[j+1]=B[j+1];o[j+2]=B[j+2];o[j+3]=255; continue; }
+      s=ia.shade[i]; lift = s>1 ? (s-1)*140 : 0; s=Math.min(1,s);
+      for(k=0;k<3;k++){ o[j+k] = B[j+k]*(1-a) + Math.min(255, rgb[k]*s + lift)*a; }
+      o[j+3]=255;
+    }
+    x.putImageData(out,0,0);
+    iaCache[color]=c;
+    return c;
+  }
+
+  function pintar(ctx, color){
+    if(modoIA && ia){
+      var fuente = tenirIA(color || '#D9C7A7');
+      var base = Math.max(W/fuente.width, H/fuente.height) * vista.scale;
+      var dw=fuente.width*base, dh=fuente.height*base;
+      ctx.clearRect(0,0,W,H);
+      ctx.drawImage(fuente, (W-dw)/2+vista.ox, (H-dh)/2+vista.oy, dw, dh);
+      return;
+    }
+    dibujarFoto(ctx); dibujarPano(ctx, color);
+  }
+
+  function fotoParaIA(){
+    var max=1024, s=Math.min(1, max/Math.max(img.width,img.height));
+    var c=document.createElement('canvas'); c.width=Math.round(img.width*s); c.height=Math.round(img.height*s);
+    c.getContext('2d').drawImage(img,0,0,c.width,c.height);
+    return c.toDataURL('image/jpeg',0.85).split(',')[1];
+  }
+
+  function hoyUsos(){
+    try{ var k='tg-ia-'+new Date().toISOString().slice(0,10); return [k, parseInt(localStorage.getItem(k)||'0',10)]; }
+    catch(e){ return ['',0]; }
+  }
+
+  var elIAEstado=document.getElementById('iaEstado'), btnIA=document.getElementById('btnIA'), elCarga=document.getElementById('cargandoIA');
+  function estadoIA(t,err){ elIAEstado.textContent=t||''; elIAEstado.classList.toggle('err',!!err); }
+
+  btnIA.addEventListener('click', function(){
+    if(modoIA){ // volver a instantánea
+      modoIA=false; btnIA.textContent= ia ? 'Ver paño realista' : 'Generar mi paño realista';
+      btnIA.classList.remove('sec'); estadoIA(''); pintarTodo(); return;
+    }
+    if(ia){ activarIA(); return; }
+    var u=hoyUsos();
+    if(u[1]>=5){ estadoIA('Llegaste al límite de 5 pruebas con IA por hoy. Mañana puedes volver a intentarlo, o escríbele a Tati para tu análisis completo.', true); return; }
+    btnIA.disabled=true; elCarga.classList.add('ver'); estadoIA('');
+    var ctrl=('AbortController' in window)? new AbortController():null;
+    var tm=setTimeout(function(){ if(ctrl) ctrl.abort(); }, 70000);
+    fetch(WORKER, {method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({image: fotoParaIA(), mime:'image/jpeg'}), signal: ctrl?ctrl.signal:undefined})
+    .then(function(r){ return r.json().then(function(j){ return {ok:r.ok, j:j}; }); })
+    .then(function(res){
+      if(!res.ok || !res.j.image) throw new Error(res.j.error || 'No se pudo generar');
+      return new Promise(function(ok, no){
+        var im=new Image(); im.onload=function(){ ok(im); }; im.onerror=function(){ no(new Error('Imagen inválida')); };
+        im.src='data:'+(res.j.mime||'image/png')+';base64,'+res.j.image;
+      });
+    })
+    .then(function(im){
+      var p=prepararIA(im);
+      if(!p) throw new Error('La IA no logró colocar el paño en esta foto. Prueba con una foto de frente, con los hombros visibles.');
+      ia=p; iaCache={};
+      if(u[0]) try{ localStorage.setItem(u[0], String(u[1]+1)); }catch(e){}
+      activarIA();
+    })
+    .catch(function(e){
+      var m = (e && e.name==='AbortError') ? 'Tardó demasiado. Intenta de nuevo en un momento.' : (e.message||'Ocurrió un error');
+      if(/Failed to fetch|NetworkError|Load failed/i.test(m)) m='No hubo conexión con el servicio. Revisa tu internet e intenta de nuevo.';
+      estadoIA(m, true);
+    })
+    .finally(function(){ clearTimeout(tm); btnIA.disabled=false; elCarga.classList.remove('ver'); });
+  });
+
+  function activarIA(){
+    modoIA=true; vista={scale:1,ox:0,oy:0}; document.getElementById('zoom').value=100;
+    if(!colorA){ colorA='#2F4A3E'; nombreA='Verde pino'; document.getElementById('etqA').textContent=nombreA; }
+    btnIA.textContent='Volver a prueba instantánea'; btnIA.classList.add('sec');
+    estadoIA('Listo. Ahora toca cualquier tono de abajo: el paño cambia al instante.');
+    pintarTodo(); renderTonos();
+  }
+
   function pintarTodo(){ pintar(cxA, colorA); if(comparar) pintar(cxB, colorB); }
 
   // ══ Pan & zoom (en el lienzo activo se arrastra la foto; misma vista para ambos) ══
