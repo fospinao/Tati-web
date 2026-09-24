@@ -158,7 +158,7 @@
 
   /* Modo IA */
   .ia-caja{max-width:560px;margin:14px auto 0;text-align:center;background:var(--blanco);border:1px solid rgba(196,144,155,.45);border-radius:6px;padding:16px 18px}
-  .ia-caja b{font-family:'Cormorant Garamond',serif;font-size:21px;font-weight:500;display:block;margin-bottom:4px}
+  .ia-caja b{font-family:'Cormorant Garamond',serif;font-size:21px;font-weight:500;display:block;margin-bottom:12px}
   .ia-caja p{font-size:13px;color:var(--grafito);margin-bottom:12px}
   .btn-ia{font-family:'Jost';font-size:12.5px;font-weight:500;letter-spacing:.12em;text-transform:uppercase;padding:13px 24px;border-radius:2px;border:1px solid var(--rosa);background:var(--rosa);color:#fff;cursor:pointer;transition:all .25s}
   .btn-ia:hover{background:var(--ciruela);border-color:var(--ciruela)}
@@ -170,6 +170,13 @@
   .cargando.ver{display:flex}
   .cargando i{width:34px;height:34px;border:3px solid rgba(196,144,155,.35);border-top-color:var(--rosa);border-radius:50%;animation:gira 1s linear infinite}
   @keyframes gira{to{transform:rotate(360deg)}}
+
+  .webcam{position:fixed;inset:0;z-index:200;background:rgba(61,44,58,.92);display:none;align-items:center;justify-content:center;flex-direction:column;gap:16px;padding:20px}
+  .webcam.ver{display:flex}
+  .webcam video{max-width:min(92vw,640px);max-height:70vh;border-radius:6px;transform:scaleX(-1);background:#000}
+  .webcam .fila{display:flex;gap:12px}
+  .webcam .btn-carga.sec{color:var(--marfil);border-color:rgba(247,244,239,.6)}
+  .webcam .btn-carga.sec:hover{background:var(--marfil);color:var(--ciruela)}
 </style>
 </head>
 <body>
@@ -204,6 +211,13 @@
     </div>
   </div>
   <input type="file" id="archivo" accept="image/*" style="position:fixed;left:-9999px;top:0;width:1px;height:1px;opacity:0">
+  <div class="webcam" id="webcam">
+    <video id="webcamVideo" autoplay playsinline muted></video>
+    <div class="fila">
+      <button type="button" class="btn-carga" id="webcamCapturar">Tomar foto</button>
+      <button type="button" class="btn-carga sec" id="webcamCancelar">Cancelar</button>
+    </div>
+  </div>
   <input type="file" id="archivoCam" accept="image/*" capture="user" style="position:fixed;left:-9999px;top:0;width:1px;height:1px;opacity:0">
 
   <!-- Estudio -->
@@ -229,7 +243,6 @@
 
     <div class="ia-caja" id="iaCaja">
       <b>✨ Prueba realista con IA</b>
-      <p>La inteligencia artificial viste tu foto con un paño real, con pliegues y caída natural, y luego lo cambias a cualquier tono. Para esto tu foto se envía a Google para procesarla; no se guarda.</p>
       <button type="button" class="btn-ia" id="btnIA">Generar mi paño realista</button>
       <div class="ia-estado" id="iaEstado"></div>
     </div>
@@ -370,7 +383,25 @@
   inGal.addEventListener('change', function(e){ procesarArchivo(e.target.files[0]); });
   inCam.addEventListener('change', function(e){ procesarArchivo(e.target.files[0]); });
   document.getElementById('btnGaleria').addEventListener('click', function(){ inGal.value=''; inGal.click(); });
-  document.getElementById('btnCamara').addEventListener('click', function(){ inCam.value=''; inCam.click(); });
+  // Cámara: en celular abre la cámara nativa; en computador usa la cámara web
+  var esMovil = /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent) || (navigator.maxTouchPoints>1 && /Macintosh/.test(navigator.userAgent));
+  var elCam = document.getElementById('webcam'), elVid = document.getElementById('webcamVideo'), flujo = null;
+  function cerrarCam(){ if(flujo){ flujo.getTracks().forEach(function(t){t.stop();}); flujo=null; } elCam.classList.remove('ver'); }
+  document.getElementById('btnCamara').addEventListener('click', function(){
+    if(esMovil || !(navigator.mediaDevices && navigator.mediaDevices.getUserMedia)){ inCam.value=''; inCam.click(); return; }
+    elError.classList.remove('ver');
+    navigator.mediaDevices.getUserMedia({video:{facingMode:'user', width:{ideal:1280}, height:{ideal:960}}, audio:false})
+      .then(function(s){ flujo=s; elVid.srcObject=s; elCam.classList.add('ver'); })
+      .catch(function(){ mostrarError('No pude abrir la cámara del computador. Revisa el permiso de cámara en el navegador (el ícono junto a la dirección) o usa "Elegir de la galería".'); });
+  });
+  document.getElementById('webcamCancelar').addEventListener('click', cerrarCam);
+  document.getElementById('webcamCapturar').addEventListener('click', function(){
+    if(!elVid.videoWidth) return;
+    var c=document.createElement('canvas'); c.width=elVid.videoWidth; c.height=elVid.videoHeight;
+    var x=c.getContext('2d'); x.translate(c.width,0); x.scale(-1,1); x.drawImage(elVid,0,0);
+    cerrarCam();
+    c.toBlob(function(b){ procesarArchivo(new File([b],'camara.jpg',{type:'image/jpeg'})); }, 'image/jpeg', 0.92);
+  });
   document.getElementById('otraFoto').addEventListener('click', function(){
     document.getElementById('estudio').style.display = 'none';
     document.getElementById('zonaCarga').style.display = 'block';
@@ -526,7 +557,7 @@
     modoIA=true; vista={scale:1,ox:0,oy:0}; document.getElementById('zoom').value=100;
     if(!colorA){ colorA='#2F4A3E'; nombreA='Verde pino'; document.getElementById('etqA').textContent=nombreA; }
     btnIA.textContent='Volver a prueba instantánea'; btnIA.classList.add('sec');
-    estadoIA('Listo. Ahora toca cualquier tono de abajo: el paño cambia al instante.');
+    estadoIA('Toca cualquier tono de abajo.');
     pintarTodo(); renderTonos();
   }
 
