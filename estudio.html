@@ -651,6 +651,20 @@
     fuertes.sort(function(a,b){return a-b;});
     var ref=fuertes[Math.floor(fuertes.length*0.92)]||255;
     for(i=0;i<n;i++){ if(alpha[i]>0) shade[i]=Math.min(1.35, lum[i]/ref); }
+    // 5b) Sin outline oscuro: en la franja del borde, la luz del paño se iguala a la de la tela vecina
+    var duro=new Float32Array(n), sh=new Float32Array(n), inter=new Float32Array(n);
+    for(i=0;i<n;i++){ if(alpha[i]>0.95) duro[i]=1; }
+    var bordeN=desenfocar(duro, w, h, 4);   // <1 cerca del borde del paño
+    for(i=0;i<n;i++){ if(duro[i] && bordeN[i]>=0.995){ inter[i]=1; sh[i]=shade[i]; } }  // solo tela interior
+    var rb=Math.max(4, Math.round(w*0.018));
+    var sumS=desenfocar(sh, w, h, rb), sumW=desenfocar(inter, w, h, rb);
+    for(i=0;i<n;i++){
+      if(alpha[i]<=0) continue;
+      if(!inter[i] && sumW[i]>0.02){
+        var local=sumS[i]/sumW[i];
+        if(shade[i] < local*0.92) shade[i]=local*0.92;
+      }
+    }
     window._iaInfo={pano: magenta?'magenta':'verde', cobertura: Math.round(fuertes.length/n*100)+'%'};
     return {w:w,h:h,base:base,alpha:alpha,shade:shade};
   }
