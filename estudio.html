@@ -525,22 +525,22 @@
   }
 
   function prepararIA(im){
-    var w=im.width, h=im.height, n=w*h, i, r,g,b,m,v;
+    var w=im.width, h=im.height, n=w*h, i, r,g,b,m,v,k;
     var c=document.createElement('canvas'); c.width=w; c.height=h;
     var x=c.getContext('2d'); x.drawImage(im,0,0);
     var d=x.getImageData(0,0,w,h).data;
     var alpha=new Float32Array(n), shade=new Float32Array(n), base=new Uint8ClampedArray(d), greens=[];
 
-    // 1) Máscara del paño verde
+    // 1) Máscara del paño (incluye las sombras oscuras de la tela)
     for(i=0;i<n;i++){
       r=d[i*4]; g=d[i*4+1]; b=d[i*4+2]; m=Math.max(r,b);
-      v = g>40 ? (g-m)/g : 0;
-      alpha[i]=suave(0.22,0.45,v);
+      v = g>14 ? (g-m)/g : 0;
+      alpha[i]=suave(0.16,0.38,v);
       if(alpha[i]>0.95) greens.push(g);
     }
     if(greens.length < n*0.03) return null;
 
-    // 2) Foto original en el mismo lienzo
+    // 2) Foto original al tamaño de la imagen generada
     var od=null;
     try {
       var o=document.createElement('canvas'); o.width=w; o.height=h;
@@ -550,56 +550,50 @@
       od=ox.getImageData(0,0,w,h).data;
     } catch(e){}
 
-    // 3) Alinear original vs. IA (la IA puede correr la imagen unos píxeles)
-    var alineado=false, mdx=0, mdy=0;
+    // 3) Mapa de color suave: lleva el tono real de piel y fondo a la imagen de la IA, sin pegar píxeles
     if(od){
-      var gris=function(a,j){ return a[j]*0.3+a[j+1]*0.59+a[j+2]*0.11; };
-      var paso=Math.max(4, Math.round(w/160)), mg=Math.round(w*0.05);
-      var costo=function(dx,dy){
-        var t=0, c2=0, xx, yy, ia_i, oi, sx, sy;
-        for(yy=mg; yy<h-mg; yy+=paso){ for(xx=mg; xx<w-mg; xx+=paso){
-          ia_i=yy*w+xx; if(alpha[ia_i]>0) continue;
-          sx=xx+dx; sy=yy+dy; if(sx<0||sy<0||sx>=w||sy>=h) continue;
-          oi=sy*w+sx; t+=Math.abs(gris(d,ia_i*4)-gris(od,oi*4)); c2++;
-        } }
-        return c2>200 ? t/c2 : 999;
-      };
-      var mejor=costo(0,0), gx=0, gy=0, dx, dy, cc, R=Math.round(w*0.03), P=Math.max(2,Math.round(R/6));
-      for(dy=-R; dy<=R; dy+=P) for(dx=-R; dx<=R; dx+=P){ cc=costo(dx,dy); if(cc<mejor){ mejor=cc; gx=dx; gy=dy; } }
-      for(dy=gy-P; dy<=gy+P; dy++) for(dx=gx-P; dx<=gx+P; dx++){ cc=costo(dx,dy); if(cc<mejor){ mejor=cc; mdx=dx; mdy=dy; } }
-      if(mdx===0 && mdy===0){ mdx=gx; mdy=gy; }
-      alineado = mejor < 24;
-    }
-
-    if(alineado){
-      // Todo lo que no es tela sale de la foto real: tono de piel verdadero, cero verde
-      var xx2, yy2, sx2, sy2, oi2;
-      for(i=0;i<n;i++){
-        if(alpha[i]>=1) continue;
-        xx2=i%w; yy2=(i-xx2)/w;
-        sx2=Math.min(w-1,Math.max(0,xx2+mdx)); sy2=Math.min(h-1,Math.max(0,yy2+mdy));
-        oi2=(sy2*w+sx2)*4;
-        base[i*4]=od[oi2]; base[i*4+1]=od[oi2+1]; base[i*4+2]=od[oi2+2];
+      var cel=Math.max(8, Math.round(w/48)), gw=Math.ceil(w/cel), gh=Math.ceil(h/cel), gn=gw*gh;
+      var sO=[new Float32Array(gn),new Float32Array(gn),new Float32Array(gn)];
+      var sA=[new Float32Array(gn),new Float32Array(gn),new Float32Array(gn)];
+      var px, py, gi;
+      for(py=0;py<h;py+=2) for(px=0;px<w;px+=2){
+        i=py*w+px; if(alpha[i]>0) continue;
+        gi=Math.floor(py/cel)*gw+Math.floor(px/cel);
+        for(k=0;k<3;k++){ sO[k][gi]+=od[i*4+k]; sA[k][gi]+=d[i*4+k]; }
       }
-    } else {
-      // Respaldo: corrección de color global + limpieza de franja
-      if(od){
-        var sa=[0,0,0], sb=[0,0,0], cnt=0, k;
-        for(i=0;i<n;i+=3){ if(alpha[i]===0){ for(k=0;k<3;k++){ sa[k]+=od[i*4+k]; sb[k]+=d[i*4+k]; } cnt++; } }
-        if(cnt>1000){
-          var gan=[0,1,2].map(function(k){ return Math.max(0.8, Math.min(1.25, sa[k]/Math.max(1,sb[k]))); });
-          for(i=0;i<n;i++){ if(alpha[i]<1){ for(k=0;k<3;k++) base[i*4+k]=d[i*4+k]*gan[k]; } }
+      var rad=2, rat=[new Float32Array(gn),new Float32Array(gn),new Float32Array(gn)], gxx, gyy, ax, ay, tO, tA;
+      for(k=0;k<3;k++){
+        var gl=[0,0], tot=[0,0];
+        for(gyy=0;gyy<gh;gyy++) for(gxx=0;gxx<gw;gxx++){
+          tO=0; tA=0;
+          for(ay=Math.max(0,gyy-rad); ay<=Math.min(gh-1,gyy+rad); ay++)
+            for(ax=Math.max(0,gxx-rad); ax<=Math.min(gw-1,gxx+rad); ax++){ tO+=sO[k][ay*gw+ax]; tA+=sA[k][ay*gw+ax]; }
+          rat[k][gyy*gw+gxx] = tA>200 ? Math.max(0.7, Math.min(1.4, tO/tA)) : -1;
+          gl[0]+=sO[k][gyy*gw+gxx]; gl[1]+=sA[k][gyy*gw+gxx];
+        }
+        var glob=Math.max(0.7, Math.min(1.4, gl[0]/Math.max(1,gl[1])));
+        for(gi=0;gi<gn;gi++) if(rat[k][gi]<0) rat[k][gi]=glob;   // celdas sin datos (bajo el paño): proporción global
+      }
+      var fx, fy, x0, y0, x1, y1, tx, ty, val;
+      for(py=0;py<h;py++){
+        fy=Math.max(0, Math.min(gh-1, py/cel-0.5)); y0=Math.floor(fy); y1=Math.min(gh-1,y0+1); ty=fy-y0;
+        for(px=0;px<w;px++){
+          i=py*w+px; if(alpha[i]>=1) continue;
+          fx=Math.max(0, Math.min(gw-1, px/cel-0.5)); x0=Math.floor(fx); x1=Math.min(gw-1,x0+1); tx=fx-x0;
+          for(k=0;k<3;k++){
+            val = (rat[k][y0*gw+x0]*(1-tx)+rat[k][y0*gw+x1]*tx)*(1-ty) + (rat[k][y1*gw+x0]*(1-tx)+rat[k][y1*gw+x1]*tx)*ty;
+            base[i*4+k]=d[i*4+k]*val;
+          }
         }
       }
-      var cerca=desenfocar(alpha, w, h, Math.max(6, Math.round(w*0.025)));
-      for(i=0;i<n;i++){
-        if(alpha[i]>=1) continue;
-        r=base[i*4]; g=base[i*4+1]; b=base[i*4+2];
-        if(cerca[i]>0.01){ base[i*4+1]=Math.min(g, (r+b)/2 + 4); }
-        else if(g>Math.max(r,b)){ base[i*4+1]=Math.max(r,b); }
-      }
     }
-    window._iaAlineado = alineado; // diagnóstico
+
+    // 4) Último rastro de verde: ningún píxel fuera de la tela puede tener más verde que rojo y azul
+    for(i=0;i<n;i++){
+      if(alpha[i]>=1) continue;
+      r=base[i*4]; g=base[i*4+1]; b=base[i*4+2]; m=Math.max(r,b);
+      if(g>m) base[i*4+1]=m;
+    }
 
     // 4) Sombreado de la tela
     greens.sort(function(a,b){return a-b;});
