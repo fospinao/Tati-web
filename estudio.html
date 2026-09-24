@@ -349,8 +349,9 @@
         document.getElementById('zonaCarga').style.display = 'none';
         document.getElementById('estudio').style.display = 'block';
         document.getElementById('zoom').value = 100;
-        autoEncuadre(im);
+        usuarioMovio = false;
         pintarTodo();
+        conDetector(function(){ if(img===im && !modoIA && !usuarioMovio){ autoEncuadre(im, false); pintarTodo(); } });
         window.scrollTo({top: document.getElementById('estudio').offsetTop - 10, behavior:'smooth'});
       };
       im.src = ev.target.result;
@@ -359,23 +360,42 @@
   }
 
   // ══ Auto-encuadre: detecta el rostro y acomoda la foto para que el paño caiga bajo el mentón ══
-  function autoEncuadre(im){
+  var usuarioMovio = false;
+  function limitarVista(fw, fh){
+    var base = Math.max(W/fw, H/fh) * vista.scale, dw = fw*base, dh = fh*base;
+    var mx = (dw-W)/2, my = (dh-H)/2;
+    vista.ox = Math.max(-mx, Math.min(mx, vista.ox));
+    vista.oy = Math.max(-my, Math.min(my, vista.oy));
+  }
+  function autoEncuadre(im, esIA){
     try {
-      if(!window._faceDetector) return;
+      if(!window._faceDetector) return false;
       var res = window._faceDetector.detect(im);
-      if(!res || !res.detections || !res.detections.length) return;
+      if(!res || !res.detections || !res.detections.length) return false;
       var bb = res.detections[0].boundingBox;
       var base0 = Math.max(W/im.width, H/im.height);
-      var s = (W * 0.36) / (bb.width * base0);
-      s = Math.max(1, Math.min(3, s));
+      var s = (W * (esIA ? 0.40 : 0.36)) / (bb.width * base0);
+      s = Math.max(1, Math.min(esIA ? 2.5 : 3, s));
       vista.scale = s;
       var dw = im.width*base0*s, dh = im.height*base0*s;
       var xc = bb.originX + bb.width/2;
-      var yMenton = bb.originY + bb.height*1.03;
-      vista.ox = W*0.5  - (W-dw)/2 - xc*base0*s;
-      vista.oy = H*0.44 - (H-dh)/2 - yMenton*base0*s;
+      vista.ox = W*0.5 - (W-dw)/2 - xc*base0*s;
+      if(esIA){
+        var yc = bb.originY + bb.height*0.5;
+        vista.oy = H*0.36 - (H-dh)/2 - yc*base0*s;
+      } else {
+        var yMenton = bb.originY + bb.height*1.03;
+        vista.oy = H*0.44 - (H-dh)/2 - yMenton*base0*s;
+      }
+      limitarVista(im.width, im.height);
       document.getElementById('zoom').value = Math.round(s*100);
-    } catch(e){ /* sin detección: encuadre manual */ }
+      return true;
+    } catch(e){ return false; }
+  }
+  // Ejecuta fn apenas el detector esté listo (si ya está, de inmediato)
+  function conDetector(fn){
+    if(window._faceDetector){ fn(); return; }
+    window.addEventListener('detectorListo', function(){ fn(); }, {once:true});
   }
 
   var inGal = document.getElementById('archivo');
@@ -520,6 +540,7 @@
   btnIA.addEventListener('click', function(){
     if(modoIA){ // volver a instantánea
       modoIA=false; btnIA.textContent= ia ? 'Ver paño realista' : 'Generar mi paño realista';
+      vista={scale:1,ox:0,oy:0}; usuarioMovio=false; autoEncuadre(img, false);
       btnIA.classList.remove('sec'); estadoIA(''); pintarTodo(); return;
     }
     if(ia){ activarIA(); return; }
@@ -554,7 +575,9 @@
   });
 
   function activarIA(){
-    modoIA=true; vista={scale:1,ox:0,oy:0}; document.getElementById('zoom').value=100;
+    modoIA=true; vista={scale:1,ox:0,oy:0}; document.getElementById('zoom').value=100; usuarioMovio=false;
+    var fuenteIA = tenirIA(colorA || '#2F4A3E');
+    conDetector(function(){ if(modoIA && !usuarioMovio){ autoEncuadre(fuenteIA, true); pintarTodo(); } });
     if(!colorA){ colorA='#2F4A3E'; nombreA='Verde pino'; document.getElementById('etqA').textContent=nombreA; }
     btnIA.textContent='Volver a prueba instantánea'; btnIA.classList.add('sec');
     estadoIA('Toca cualquier tono de abajo.');
@@ -569,6 +592,7 @@
     cv.addEventListener('pointerdown', function(e){ down=true; lx=e.clientX; ly=e.clientY; cv.setPointerCapture(e.pointerId); });
     cv.addEventListener('pointermove', function(e){
       if(!down) return;
+      usuarioMovio = true;
       var r = cv.getBoundingClientRect(), k = W/r.width;
       vista.ox += (e.clientX-lx)*k; vista.oy += (e.clientY-ly)*k;
       lx=e.clientX; ly=e.clientY; pintarTodo();
@@ -578,6 +602,7 @@
   }
   arrastre(cvA); arrastre(cvB);
   document.getElementById('zoom').addEventListener('input', function(){
+    usuarioMovio = true;
     vista.scale = this.value/100; pintarTodo();
   });
 
@@ -713,6 +738,7 @@ try {
     baseOptions: { modelAssetPath: 'https://storage.googleapis.com/mediapipe-models/face_detector/blaze_face_short_range/float16/1/blaze_face_short_range.tflite' },
     runningMode: 'IMAGE'
   });
+  window.dispatchEvent(new Event('detectorListo'));
 } catch(e) { /* si falla, el estudio funciona con encuadre manual */ }
 </script>
 </body>
