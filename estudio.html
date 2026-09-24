@@ -140,6 +140,21 @@
     .marco{flex:1 1 45%}
     .tonos{grid-template-columns:repeat(auto-fill,minmax(44px,1fr))}
   }
+
+  .drop{cursor:default}
+  .drop-botones{display:flex;gap:10px;justify-content:center;margin-top:18px;flex-wrap:wrap}
+  .btn-carga{
+    font-family:'Jost';font-size:12.5px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;
+    padding:13px 22px;border-radius:2px;cursor:pointer;border:1px solid var(--ciruela);
+    background:var(--ciruela);color:var(--marfil);transition:all .25s
+  }
+  .btn-carga:hover{background:var(--rosa);border-color:var(--rosa)}
+  .btn-carga.sec{background:none;color:var(--ciruela)}
+  .btn-carga.sec:hover{background:var(--ciruela);color:var(--marfil)}
+  .aviso-error{display:none;margin-top:14px;font-size:13px;color:#8E1B2F;background:#fdf0f0;border:1px solid #ecc8c8;border-radius:4px;padding:10px 14px}
+  .aviso-error.ver{display:block}
+  .aviso-navegador{display:none;margin-top:12px;font-size:13px;color:var(--ciruela);background:#fdf6e8;border:1px solid #e8d9b5;border-radius:4px;padding:12px 14px;line-height:1.5}
+  .aviso-navegador.ver{display:block}
 </style>
 </head>
 <body>
@@ -159,13 +174,22 @@
 
   <!-- Carga -->
   <div class="cargar" id="zonaCarga">
-    <label class="drop" id="drop">
+    <div class="drop" id="drop">
       <span class="ic">📷</span>
       <b>Sube o toma tu foto</b>
       <span>Ideal: de frente, con buena luz natural, hombros visibles y fondo sencillo</span>
-      <input type="file" id="archivo" accept="image/*">
-    </label>
+      <div class="drop-botones">
+        <button type="button" class="btn-carga" id="btnGaleria">Elegir de la galería</button>
+        <button type="button" class="btn-carga sec" id="btnCamara">Tomar foto ahora</button>
+      </div>
+      <div class="aviso-error" id="avisoError"></div>
+    </div>
+    <div class="aviso-navegador" id="avisoNavegador">
+      ⚠️ Parece que abriste esta página dentro de WhatsApp o Instagram, y ahí la cámara y la galería a veces no funcionan. <b>Toca los tres puntos (⋮ o •••) arriba y elige "Abrir en el navegador"</b> (Chrome o Safari) y vuelve a intentarlo.
+    </div>
   </div>
+  <input type="file" id="archivo" accept="image/*" style="position:fixed;left:-9999px;top:0;width:1px;height:1px;opacity:0">
+  <input type="file" id="archivoCam" accept="image/*" capture="user" style="position:fixed;left:-9999px;top:0;width:1px;height:1px;opacity:0">
 
   <!-- Estudio -->
   <div id="estudio">
@@ -259,24 +283,51 @@
   var cvB = document.getElementById('cvB'), cxB = cvB.getContext('2d');
   var W = cvA.width, H = cvA.height;
 
-  // ══ Carga de foto ══
-  document.getElementById('archivo').addEventListener('change', function(e){
-    var f = e.target.files[0]; if(!f) return;
-    var url = URL.createObjectURL(f);
-    var im = new Image();
-    im.onload = function(){
-      img = im; vista = {scale:1, ox:0, oy:0};
-      document.getElementById('zonaCarga').style.display = 'none';
-      document.getElementById('estudio').style.display = 'block';
-      document.getElementById('zoom').value = 100;
-      pintarTodo();
-      window.scrollTo({top: document.getElementById('estudio').offsetTop - 10, behavior:'smooth'});
+  // ══ Carga de foto (robusta: FileReader, errores visibles, webview) ══
+  var elError = document.getElementById('avisoError');
+  function mostrarError(msg){ elError.textContent = msg; elError.classList.add('ver'); }
+
+  // Aviso si está dentro del navegador de una app (Instagram/Facebook/WhatsApp/Messenger)
+  var ua = navigator.userAgent || '';
+  if (/Instagram|FBAN|FBAV|FB_IAB|WhatsApp|Messenger|Line\//i.test(ua)) {
+    document.getElementById('avisoNavegador').classList.add('ver');
+  }
+
+  function procesarArchivo(f){
+    if(!f) return;
+    elError.classList.remove('ver');
+    if(f.type && f.type.indexOf('image') !== 0){
+      mostrarError('Ese archivo no es una imagen. Elige una foto (JPG o PNG).');
+      return;
+    }
+    var lector = new FileReader();
+    lector.onerror = function(){ mostrarError('No pude leer la foto. Intenta con otra imagen o desde el navegador Chrome.'); };
+    lector.onload = function(ev){
+      var im = new Image();
+      im.onerror = function(){ mostrarError('No pude abrir esa imagen. Si es una foto de iPhone en formato HEIC, toma un pantallazo de la foto y sube el pantallazo.'); };
+      im.onload = function(){
+        img = im; vista = {scale:1, ox:0, oy:0};
+        document.getElementById('zonaCarga').style.display = 'none';
+        document.getElementById('estudio').style.display = 'block';
+        document.getElementById('zoom').value = 100;
+        pintarTodo();
+        window.scrollTo({top: document.getElementById('estudio').offsetTop - 10, behavior:'smooth'});
+      };
+      im.src = ev.target.result;
     };
-    im.src = url;
-  });
+    lector.readAsDataURL(f);
+  }
+
+  var inGal = document.getElementById('archivo');
+  var inCam = document.getElementById('archivoCam');
+  inGal.addEventListener('change', function(e){ procesarArchivo(e.target.files[0]); });
+  inCam.addEventListener('change', function(e){ procesarArchivo(e.target.files[0]); });
+  document.getElementById('btnGaleria').addEventListener('click', function(){ inGal.value=''; inGal.click(); });
+  document.getElementById('btnCamara').addEventListener('click', function(){ inCam.value=''; inCam.click(); });
   document.getElementById('otraFoto').addEventListener('click', function(){
-    document.getElementById('archivo').value = '';
-    document.getElementById('archivo').click();
+    document.getElementById('estudio').style.display = 'none';
+    document.getElementById('zonaCarga').style.display = 'block';
+    window.scrollTo({top: 0, behavior: 'smooth'});
   });
 
   // ══ Dibujo ══
