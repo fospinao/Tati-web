@@ -627,6 +627,8 @@
         if(cc2>50 && ss/cc2<bmejor){ bmejor=ss/cc2; bdx=ddx; bdy=ddy; }
       }
       var nx, ny, rr, wt, oi;
+      if(bmejor > 14) { window._iaRostro={omitido:true, costo:Math.round(bmejor)}; }
+      else
       for(yy=y1; yy<=y2; yy++) for(xx=x1; xx<=x2; xx++){
         i=yy*w+xx; if(alpha[i]>=1) continue;
         nx=(xx-cxF)/rxF; ny=(yy-cyF)/ryF; rr=Math.sqrt(nx*nx+ny*ny);
