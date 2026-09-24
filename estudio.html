@@ -559,50 +559,40 @@
       od=ox.getImageData(0,0,w,h).data;
     } catch(e){}
 
-    // 3) Mapa de color suave: lleva el tono real de piel y fondo a la imagen de la IA, sin pegar píxeles
+    // 3) Color real: fuera de la tela, el color viene de la foto original y la luz de la imagen de la IA
     if(od){
-      var cel=Math.max(8, Math.round(w/48)), gw=Math.ceil(w/cel), gh=Math.ceil(h/cel), gn=gw*gh;
-      var sO=[new Float32Array(gn),new Float32Array(gn),new Float32Array(gn)];
-      var sA=[new Float32Array(gn),new Float32Array(gn),new Float32Array(gn)];
-      var px, py, gi;
-      for(py=0;py<h;py+=2) for(px=0;px<w;px+=2){
-        i=py*w+px; if(alpha[i]>0) continue;
-        gi=Math.floor(py/cel)*gw+Math.floor(px/cel);
-        for(k=0;k<3;k++){ sO[k][gi]+=od[i*4+k]; sA[k][gi]+=d[i*4+k]; }
-      }
-      var rad=2, rat=[new Float32Array(gn),new Float32Array(gn),new Float32Array(gn)], gxx, gyy, ax, ay, tO, tA;
-      for(k=0;k<3;k++){
-        var gl=[0,0], tot=[0,0];
-        for(gyy=0;gyy<gh;gyy++) for(gxx=0;gxx<gw;gxx++){
-          tO=0; tA=0;
-          for(ay=Math.max(0,gyy-rad); ay<=Math.min(gh-1,gyy+rad); ay++)
-            for(ax=Math.max(0,gxx-rad); ax<=Math.min(gw-1,gxx+rad); ax++){ tO+=sO[k][ay*gw+ax]; tA+=sA[k][ay*gw+ax]; }
-          rat[k][gyy*gw+gxx] = tA>200 ? Math.max(0.7, Math.min(1.4, tO/tA)) : -1;
-          gl[0]+=sO[k][gyy*gw+gxx]; gl[1]+=sA[k][gyy*gw+gxx];
-        }
-        var glob=Math.max(0.7, Math.min(1.4, gl[0]/Math.max(1,gl[1])));
-        for(gi=0;gi<gn;gi++) if(rat[k][gi]<0) rat[k][gi]=glob;   // celdas sin datos (bajo el paño): proporción global
-      }
-      var fx, fy, x0, y0, x1, y1, tx, ty, val;
+      // alinear (la IA puede correr la imagen unos píxeles)
+      var gris=function(a,j){ return a[j]*0.3+a[j+1]*0.59+a[j+2]*0.11; };
+      var paso=Math.max(4, Math.round(w/160)), mg=Math.round(w*0.05);
+      var costo=function(dx,dy){
+        var t=0, c2=0, xx, yy, ii, oi, sx, sy;
+        for(yy=mg; yy<h-mg; yy+=paso){ for(xx=mg; xx<w-mg; xx+=paso){
+          ii=yy*w+xx; if(alpha[ii]>0) continue;
+          sx=xx+dx; sy=yy+dy; if(sx<0||sy<0||sx>=w||sy>=h) continue;
+          oi=sy*w+sx; t+=Math.abs(gris(d,ii*4)-gris(od,oi*4)); c2++;
+        } }
+        return c2>200 ? t/c2 : 999;
+      };
+      var mejor=costo(0,0), gx=0, gy=0, dx, dy, cc, R=Math.round(w*0.03), P=Math.max(2,Math.round(R/6)), mdx=0, mdy=0;
+      for(dy=-R; dy<=R; dy+=P) for(dx=-R; dx<=R; dx+=P){ cc=costo(dx,dy); if(cc<mejor){ mejor=cc; gx=dx; gy=dy; } }
+      mdx=gx; mdy=gy;
+      for(dy=gy-P; dy<=gy+P; dy++) for(dx=gx-P; dx<=gx+P; dx++){ cc=costo(dx,dy); if(cc<mejor){ mejor=cc; mdx=dx; mdy=dy; } }
+
+      var px, py, sx2, sy2, oi2, lumA, lumO, f;
       for(py=0;py<h;py++){
-        fy=Math.max(0, Math.min(gh-1, py/cel-0.5)); y0=Math.floor(fy); y1=Math.min(gh-1,y0+1); ty=fy-y0;
+        sy2=Math.min(h-1,Math.max(0,py+mdy));
         for(px=0;px<w;px++){
           i=py*w+px; if(alpha[i]>=1) continue;
-          fx=Math.max(0, Math.min(gw-1, px/cel-0.5)); x0=Math.floor(fx); x1=Math.min(gw-1,x0+1); tx=fx-x0;
-          for(k=0;k<3;k++){
-            val = (rat[k][y0*gw+x0]*(1-tx)+rat[k][y0*gw+x1]*tx)*(1-ty) + (rat[k][y1*gw+x0]*(1-tx)+rat[k][y1*gw+x1]*tx)*ty;
-            base[i*4+k]=d[i*4+k]*val;
-          }
+          sx2=Math.min(w-1,Math.max(0,px+mdx)); oi2=(sy2*w+sx2)*4;
+          lumA=0.299*d[i*4]+0.587*d[i*4+1]+0.114*d[i*4+2];
+          lumO=0.299*od[oi2]+0.587*od[oi2+1]+0.114*od[oi2+2];
+          f = lumO>6 ? Math.min(2.5, lumA/lumO) : 1;
+          base[i*4]=od[oi2]*f; base[i*4+1]=od[oi2+1]*f; base[i*4+2]=od[oi2+2]*f;
         }
       }
-    }
-
-    // 4) Último rastro de verde: ningún píxel fuera de la tela puede tener más verde que rojo y azul
-    for(i=0;i<n;i++){
-      if(alpha[i]>=1) continue;
-      r=base[i*4]; g=base[i*4+1]; b=base[i*4+2]; m=Math.max(r,b);
-      if(alpha[i]>0){ if(g>(r+b)/2) base[i*4+1]=(r+b)/2; }   // transición: verde limitado al promedio de rojo y azul
-      else if(g>m) base[i*4+1]=m;
+    } else {
+      // sin foto original: al menos quitar el exceso de verde
+      for(i=0;i<n;i++){ if(alpha[i]<1){ r=base[i*4]; g=base[i*4+1]; b=base[i*4+2]; m=Math.max(r,b); if(g>m) base[i*4+1]=m; } }
     }
 
     // 4) Sombreado de la tela
