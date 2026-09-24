@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Tu Estudio de Color Online — Tati González</title>
+<meta name="description" content="Sube tu foto y prueba más de 70 tonos sobre ti, como en una sesión de colorimetría. Descubre qué colores te iluminan. Gratis, desde tu celular, tu foto nunca sale de tu dispositivo.">
+<link rel="canonical" href="https://www.tatigonzalez.com/estudio.html">
+<meta property="og:title" content="Tu Estudio de Color Online — Tati González">
+<meta property="og:description" content="Prueba más de 70 tonos sobre tu propia foto y descubre qué colores te iluminan.">
+<meta property="og:url" content="https://www.tatigonzalez.com/estudio.html">
+<meta property="og:image" content="https://www.tatigonzalez.com/assets/colorimetria.jpg">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='46' fill='%233D2C3A'/><text x='50' y='66' font-size='52' text-anchor='middle' fill='%23F7F4EF' font-family='Georgia'>T</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --marfil:#F7F4EF; --ciruela:#3D2C3A; --rosa:#C4909B; --oro:#A98E5F;
+    --grafito:#6B6461; --blanco:#FFFFFF;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  body{background:var(--marfil);color:var(--ciruela);font-family:'Jost',sans-serif;font-weight:300;line-height:1.55;font-size:16px}
+  h1,h2,h3{font-family:'Cormorant Garamond',serif;font-weight:500}
+  .wrap{max-width:920px;margin:0 auto;padding:0 20px}
+
+  header.top{padding:22px 0 14px;display:flex;align-items:center;justify-content:space-between}
+  .logo{font-family:'Cormorant Garamond',serif;font-size:20px;text-decoration:none;color:var(--ciruela)}
+  .logo em{color:var(--rosa)}
+  .volver{font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--oro);text-decoration:none}
+
+  .intro{text-align:center;padding:26px 0 24px}
+  .eyebrow{font-size:11px;letter-spacing:.28em;text-transform:uppercase;color:var(--oro);font-weight:500;margin-bottom:12px}
+  .intro h1{font-size:clamp(30px,6.5vw,46px);line-height:1.1}
+  .intro h1 em{font-style:italic;color:var(--rosa)}
+  .intro p{color:var(--grafito);max-width:480px;margin:14px auto 0}
+  .privacidad{display:inline-flex;align-items:center;gap:7px;margin-top:14px;font-size:12px;color:var(--oro);border:1px solid rgba(169,142,95,.4);padding:7px 14px;border-radius:20px}
+
+  /* Zona de carga */
+  .cargar{margin:22px auto 40px;max-width:420px}
+  .drop{
+    border:1.5px dashed rgba(61,44,58,.35);border-radius:6px;background:var(--blanco);
+    padding:44px 24px;text-align:center;cursor:pointer;transition:border-color .25s, background .25s;
+  }
+  .drop:hover{border-color:var(--rosa)}
+  .drop .ic{font-size:34px;margin-bottom:10px;display:block}
+  .drop b{font-weight:500;display:block;margin-bottom:4px}
+  .drop span{font-size:13px;color:var(--grafito)}
+  .drop input{display:none}
+
+  /* Estudio */
+  #estudio{display:none;padding-bottom:60px}
+  .lienzos{display:flex;gap:10px;justify-content:center;align-items:flex-start;flex-wrap:wrap}
+  .marco{position:relative;flex:1 1 260px;max-width:340px}
+  .marco canvas{width:100%;display:block;border-radius:4px;box-shadow:0 8px 30px rgba(61,44,58,.14);touch-action:none;cursor:grab}
+  .marco .etq{
+    position:absolute;top:10px;left:10px;background:rgba(247,244,239,.92);
+    font-size:11.5px;letter-spacing:.04em;padding:5px 11px;border-radius:14px;color:var(--ciruela)
+  }
+  .marco .fav{
+    position:absolute;top:8px;right:8px;width:34px;height:34px;border-radius:50%;
+    background:rgba(247,244,239,.92);border:none;font-size:16px;cursor:pointer;color:var(--ciruela)
+  }
+  .marco .fav.on{color:#C0392B}
+  .marco.activo canvas{outline:2.5px solid var(--rosa);outline-offset:2px}
+  #marcoB{display:none}
+  .modo-comparar #marcoB{display:block}
+
+  .barra-modos{display:flex;justify-content:center;gap:8px;margin:18px 0 4px}
+  .modo{
+    font-family:'Jost';font-size:12px;letter-spacing:.1em;text-transform:uppercase;
+    padding:9px 18px;border:1px solid rgba(61,44,58,.3);background:none;border-radius:20px;
+    cursor:pointer;color:var(--grafito);transition:all .25s
+  }
+  .modo.on{background:var(--ciruela);color:var(--marfil);border-color:var(--ciruela)}
+
+  .ajustes{display:flex;justify-content:center;align-items:center;gap:14px;margin:12px 0 6px;font-size:12.5px;color:var(--grafito);flex-wrap:wrap}
+  .ajustes input[type=range]{accent-color:var(--rosa);width:130px}
+  .ajustes button{
+    font-family:'Jost';font-size:11.5px;letter-spacing:.08em;text-transform:uppercase;
+    background:none;border:1px solid rgba(61,44,58,.3);border-radius:16px;padding:7px 14px;cursor:pointer;color:var(--ciruela)
+  }
+
+  /* Familias de color */
+  .familias{display:flex;gap:6px;overflow-x:auto;padding:16px 4px 6px;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+  .familias::-webkit-scrollbar{display:none}
+  .familia{
+    flex:0 0 auto;font-family:'Jost';font-size:12px;letter-spacing:.06em;
+    padding:8px 15px;border-radius:18px;border:1px solid rgba(61,44,58,.25);
+    background:none;cursor:pointer;color:var(--grafito);transition:all .2s
+  }
+  .familia.on{background:var(--rosa);border-color:var(--rosa);color:#fff}
+  .tonos{display:grid;grid-template-columns:repeat(auto-fill,minmax(52px,1fr));gap:8px;padding:10px 2px 4px}
+  .tono{position:relative;border:none;cursor:pointer;background:none;padding:0}
+  .tono i{display:block;width:100%;aspect-ratio:1;border-radius:6px;border:1px solid rgba(61,44,58,.12);transition:transform .15s}
+  .tono:active i{transform:scale(.92)}
+  .tono.on i{outline:2.5px solid var(--ciruela);outline-offset:2px}
+  .tono u{display:block;text-decoration:none;font-size:9px;color:var(--grafito);margin-top:3px;line-height:1.15;text-align:center}
+
+  /* Favoritos */
+  .favoritos{margin-top:18px;display:none}
+  .favoritos.hay{display:block}
+  .favoritos .titulo{font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:var(--oro);margin-bottom:8px}
+  .fav-chips{display:flex;gap:8px;flex-wrap:wrap}
+  .fav-chip{display:inline-flex;align-items:center;gap:7px;font-size:12px;border:1px solid rgba(61,44,58,.2);border-radius:16px;padding:5px 12px 5px 6px;cursor:pointer;background:var(--blanco)}
+  .fav-chip i{width:18px;height:18px;border-radius:50%;display:inline-block}
+
+  .acciones{display:flex;justify-content:center;gap:12px;margin-top:22px;flex-wrap:wrap}
+  .btn{
+    display:inline-block;padding:14px 28px;font-family:'Jost';font-size:12.5px;font-weight:500;
+    letter-spacing:.13em;text-transform:uppercase;text-decoration:none;border-radius:2px;
+    border:1px solid var(--ciruela);cursor:pointer;transition:all .25s;background:none;color:var(--ciruela)
+  }
+  .btn-solid{background:var(--ciruela);color:var(--marfil)}
+  .btn-solid:hover{background:var(--rosa);border-color:var(--rosa)}
+  .btn:hover{background:var(--ciruela);color:var(--marfil)}
+
+  /* Educación estaciones + CTA */
+  .estaciones{background:var(--blanco);padding:56px 0;margin-top:50px}
+  .estaciones h2{font-size:clamp(26px,5vw,36px);text-align:center;margin-bottom:8px}
+  .estaciones .sub{text-align:center;color:var(--grafito);max-width:520px;margin:0 auto 30px}
+  .est-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px}
+  .est{border:1px solid rgba(61,44,58,.14);border-radius:6px;padding:22px 20px;background:var(--marfil)}
+  .est .mini{display:flex;gap:4px;margin-bottom:12px}
+  .est .mini i{flex:1;height:10px;border-radius:5px}
+  .est h3{font-size:20px;margin-bottom:5px}
+  .est p{font-size:13.5px;color:var(--grafito)}
+
+  .cta-final{background:var(--ciruela);color:var(--marfil);text-align:center;padding:64px 20px}
+  .cta-final h2{font-size:clamp(26px,5.5vw,38px);max-width:560px;margin:0 auto 12px}
+  .cta-final h2 em{font-style:italic;color:var(--rosa)}
+  .cta-final p{color:rgba(247,244,239,.8);max-width:470px;margin:0 auto 26px}
+  .cta-final .btn{background:var(--rosa);border-color:var(--rosa);color:#fff}
+  .cta-final .btn:hover{background:var(--oro);border-color:var(--oro)}
+
+  footer{padding:26px 0;text-align:center;font-size:12.5px;letter-spacing:.06em;color:var(--grafito)}
+  footer a{color:var(--oro);text-decoration:none}
+
+  @media (max-width:600px){
+    .lienzos{gap:8px}
+    .marco{flex:1 1 45%}
+    .tonos{grid-template-columns:repeat(auto-fill,minmax(44px,1fr))}
+  }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <header class="top">
+    <a class="logo" href="/">Tati <em>González</em></a>
+    <a class="volver" href="/">← Volver al sitio</a>
+  </header>
+
+  <section class="intro">
+    <div class="eyebrow">Experiencia gratuita</div>
+    <h1>Tu estudio de color <em>online</em></h1>
+    <p>Sube una foto tuya y prueba más de 70 tonos sobre ti, como los paños de una sesión de colorimetría real. Fíjate cuáles te iluminan el rostro… y cuáles te apagan.</p>
+    <div class="privacidad">🔒 Tu foto nunca sale de tu celular — todo pasa aquí mismo, no se sube a ningún servidor</div>
+  </section>
+
+  <!-- Carga -->
+  <div class="cargar" id="zonaCarga">
+    <label class="drop" id="drop">
+      <span class="ic">📷</span>
+      <b>Sube o toma tu foto</b>
+      <span>Ideal: de frente, con buena luz natural, hombros visibles y fondo sencillo</span>
+      <input type="file" id="archivo" accept="image/*">
+    </label>
+  </div>
+
+  <!-- Estudio -->
+  <div id="estudio">
+    <div class="barra-modos">
+      <button class="modo on" id="modoUno">Un tono</button>
+      <button class="modo" id="modoDos">Comparar</button>
+    </div>
+
+    <div class="lienzos" id="lienzos">
+      <div class="marco activo" id="marcoA">
+        <canvas id="cvA" width="600" height="780"></canvas>
+        <div class="etq" id="etqA">Elige un tono ↓</div>
+        <button class="fav" id="favA" title="Guardar en favoritos">♡</button>
+      </div>
+      <div class="marco" id="marcoB">
+        <canvas id="cvB" width="600" height="780"></canvas>
+        <div class="etq" id="etqB">Toca este lado y elige otro tono</div>
+        <button class="fav" id="favB" title="Guardar en favoritos">♡</button>
+      </div>
+    </div>
+
+    <div class="ajustes">
+      <span>Acomoda tu foto: arrástrala · Zoom</span>
+      <input type="range" id="zoom" min="100" max="250" value="100">
+      <button id="otraFoto">Cambiar foto</button>
+    </div>
+
+    <div class="familias" id="familias"></div>
+    <div class="tonos" id="tonos"></div>
+
+    <div class="favoritos" id="cajaFavs">
+      <div class="titulo">Tus favoritos</div>
+      <div class="fav-chips" id="favChips"></div>
+    </div>
+
+    <div class="acciones">
+      <button class="btn btn-solid" id="descargar">Descargar mi resultado</button>
+    </div>
+  </div>
+</div>
+
+<!-- Estaciones -->
+<section class="estaciones">
+  <div class="wrap">
+    <h2>¿Y esto qué significa?</h2>
+    <p class="sub">En colorimetría, cada persona armoniza con una de las 4 estaciones de color — y cada estación tiene sub-tipos. Los tonos que te favorecen dependen del subtono de tu piel, tus ojos y tu cabello.</p>
+    <div class="est-grid">
+      <div class="est"><div class="mini"><i style="background:#E8A87C"></i><i style="background:#C38452"></i><i style="background:#7B5B3A"></i><i style="background:#8A6E2F"></i></div><h3>Otoño</h3><p>Cálida y profunda: tierras, mostazas, verdes oliva, terracotas.</p></div>
+      <div class="est"><div class="mini"><i style="background:#1F2A44"></i><i style="background:#7C0A2E"></i><i style="background:#0F6E5C"></i><i style="background:#EDEDED"></i></div><h3>Invierno</h3><p>Fría e intensa: contrastes fuertes, joya, blanco puro y negro.</p></div>
+      <div class="est"><div class="mini"><i style="background:#F4C95D"></i><i style="background:#F28C6B"></i><i style="background:#7FD1AE"></i><i style="background:#F9E4B7"></i></div><h3>Primavera</h3><p>Cálida y luminosa: corales, amarillos claros, verdes frescos.</p></div>
+      <div class="est"><div class="mini"><i style="background:#A7B8D0"></i><i style="background:#C9A0B4"></i><i style="background:#9AA98F"></i><i style="background:#D8D3CB"></i></div><h3>Verano</h3><p>Fría y suave: empolvados, lavandas, rosas grisáceos, azules niebla.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta-final">
+  <h2>¿Notaste que unos tonos te iluminan y otros <em>te apagan?</em></h2>
+  <p>Eso que acabas de ver a ojo, yo lo determino con método: tu estación exacta, tu paleta completa y cómo llevarla a tu clóset. Es la Sesión de Descubrimiento.</p>
+  <a class="btn" href="https://wa.me/573176912708?text=Hola%20Tati,%20hice%20el%20estudio%20de%20color%20en%20tu%20página%20y%20quiero%20mi%20Sesión%20de%20Descubrimiento." target="_blank" rel="noopener">Quiero mi análisis real</a>
+</section>
+
+<footer>
+  Tati González · Coaching de Imagen · Medellín · <a href="/">www.tatigonzalez.com</a>
+</footer>
+
+<script>
+(function(){
+  // ══ Datos de color ══
+  var FAMILIAS = {
+    'Verdes':    [['Verde pino','#2F4A3E'],['Verde oliva','#6B7A3F'],['Esmeralda','#0F6E5C'],['Salvia','#9AA98F'],['Menta','#7FD1AE'],['Verde botella','#1F3D2B'],['Kaki','#8A7F4A'],['Verde jade','#3E8E7E']],
+    'Azules':    [['Azul marino','#1F2A44'],['Azul rey','#1F4FA3'],['Celeste','#9CC3E5'],['Azul niebla','#A7B8D0'],['Petróleo','#1F4E5F'],['Turquesa','#2FA8A0'],['Denim','#4A6C9B'],['Azul hielo','#D7E4EF']],
+    'Rosas':     [['Rosa empolvado','#C9A0B4'],['Fucsia','#C2186B'],['Palo de rosa','#C4909B'],['Rosa chicle','#E86FA4'],['Malva','#B48EA0'],['Coral rosa','#EF8C8C'],['Rosa nude','#E3C6B8'],['Magenta','#A02458']],
+    'Rojos':     [['Rojo cereza','#8E1B2F'],['Vino','#7C0A2E'],['Rojo tomate','#D93A2B'],['Carmín','#B01E3C'],['Ladrillo','#A5442A'],['Rojo fresa','#D6455D'],['Borgoña','#5C1A2B'],['Rojo fuego','#E0301E']],
+    'Naranjas':  [['Terracota','#C38452'],['Durazno','#F2B48C'],['Coral','#F28C6B'],['Naranja quemado','#B85C2B'],['Mandarina','#F08A3C'],['Salmón','#F4A38C'],['Óxido','#9C4F2A'],['Melón','#F7C59F']],
+    'Amarillos': [['Amarillo limón','#F4E04D'],['Mostaza','#D9A62B'],['Mantequilla','#F9E4B7'],['Dorado','#C9962E'],['Amarillo sol','#F4C95D'],['Ocre','#B8860B'],['Vainilla','#F3E5C0'],['Ámbar','#E0A526']],
+    'Neutros':   [['Blanco puro','#F5F5F5'],['Marfil','#F0EAD9'],['Gris perla','#C9C9C9'],['Gris carbón','#4A4A4A'],['Negro','#1C1C1C'],['Beige','#D9C7A7'],['Greige','#B7AC9E'],['Crudo','#E8E0CE']],
+    'Tierras':   [['Camel','#B98A4E'],['Chocolate','#5C4030'],['Café','#7B5B3A'],['Arena','#D9BC8F'],['Taupe','#8C7B6B'],['Caramelo','#B87333'],['Nuez','#8A6E4B'],['Cacao','#4A3325']],
+    'Morados':   [['Lavanda','#B7A8D0'],['Berenjena','#4A2C4A'],['Violeta','#7A4E9E'],['Lila','#C8B4D8'],['Ciruela','#6B3A5B'],['Uva','#5B2A6E'],['Orquídea','#B565A7'],['Amatista','#8E6BA8']]
+  };
+
+  // ══ Estado ══
+  var img = null;
+  var vista = {scale:1, ox:0, oy:0};
+  var colorA = null, colorB = null, nombreA = '', nombreB = '';
+  var lado = 'A';
+  var comparar = false;
+  var favs = [];
+
+  var cvA = document.getElementById('cvA'), cxA = cvA.getContext('2d');
+  var cvB = document.getElementById('cvB'), cxB = cvB.getContext('2d');
+  var W = cvA.width, H = cvA.height;
+
+  // ══ Carga de foto ══
+  document.getElementById('archivo').addEventListener('change', function(e){
+    var f = e.target.files[0]; if(!f) return;
+    var url = URL.createObjectURL(f);
+    var im = new Image();
+    im.onload = function(){
+      img = im; vista = {scale:1, ox:0, oy:0};
+      document.getElementById('zonaCarga').style.display = 'none';
+      document.getElementById('estudio').style.display = 'block';
+      document.getElementById('zoom').value = 100;
+      pintarTodo();
+      window.scrollTo({top: document.getElementById('estudio').offsetTop - 10, behavior:'smooth'});
+    };
+    im.src = url;
+  });
+  document.getElementById('otraFoto').addEventListener('click', function(){
+    document.getElementById('archivo').value = '';
+    document.getElementById('archivo').click();
+  });
+
+  // ══ Dibujo ══
+  function dibujarFoto(ctx){
+    ctx.clearRect(0,0,W,H);
+    if(!img) return;
+    var base = Math.max(W/img.width, H/img.height) * vista.scale;
+    var dw = img.width*base, dh = img.height*base;
+    var x = (W-dw)/2 + vista.ox, y = (H-dh)/2 + vista.oy;
+    ctx.drawImage(img, x, y, dw, dh);
+  }
+
+  function dibujarPano(ctx, color){
+    if(!color) return;
+    var t = H*0.60;          // altura hombros
+    var u = H*0.705;         // fondo del escote
+    ctx.save();
+    // cuerpo del paño
+    ctx.beginPath();
+    ctx.moveTo(-20, H+20);
+    ctx.lineTo(-20, t+H*0.02);
+    ctx.quadraticCurveTo(W*0.16, t-H*0.015, W*0.30, t+H*0.022);
+    ctx.quadraticCurveTo(W*0.50, u, W*0.70, t+H*0.022);
+    ctx.quadraticCurveTo(W*0.84, t-H*0.015, W+20, t+H*0.02);
+    ctx.lineTo(W+20, H+20);
+    ctx.closePath();
+    ctx.fillStyle = color;
+    ctx.fill();
+    ctx.clip();
+    // sombreado general (profundidad de tela)
+    var g = ctx.createLinearGradient(0, t-20, 0, H);
+    g.addColorStop(0, 'rgba(0,0,0,0.20)');
+    g.addColorStop(0.18, 'rgba(0,0,0,0.02)');
+    g.addColorStop(0.75, 'rgba(0,0,0,0.10)');
+    ctx.fillStyle = g; ctx.fillRect(0, t-30, W, H);
+    // pliegues
+    function pliegue(x0, cx, alpha){
+      ctx.beginPath();
+      ctx.moveTo(x0, t+10);
+      ctx.quadraticCurveTo(cx, (t+H)/2, x0+W*0.03, H+10);
+      ctx.lineTo(x0+W*0.10, H+10);
+      ctx.quadraticCurveTo(cx+W*0.08, (t+H)/2, x0+W*0.09, t+14);
+      ctx.closePath();
+      ctx.fillStyle = 'rgba(0,0,0,'+alpha+')';
+      ctx.fill();
+    }
+    pliegue(W*0.16, W*0.13, 0.06);
+    pliegue(W*0.46, W*0.46, 0.05);
+    pliegue(W*0.72, W*0.78, 0.06);
+    // brillo del borde superior
+    ctx.beginPath();
+    ctx.moveTo(-20, t+H*0.02);
+    ctx.quadraticCurveTo(W*0.16, t-H*0.015, W*0.30, t+H*0.022);
+    ctx.quadraticCurveTo(W*0.50, u, W*0.70, t+H*0.022);
+    ctx.quadraticCurveTo(W*0.84, t-H*0.015, W+20, t+H*0.02);
+    ctx.strokeStyle = 'rgba(255,255,255,0.30)';
+    ctx.lineWidth = 4;
+    ctx.stroke();
+    ctx.restore();
+  }
+
+  function pintar(ctx, color){ dibujarFoto(ctx); dibujarPano(ctx, color); }
+  function pintarTodo(){ pintar(cxA, colorA); if(comparar) pintar(cxB, colorB); }
+
+  // ══ Pan & zoom (en el lienzo activo se arrastra la foto; misma vista para ambos) ══
+  function arrastre(cv){
+    var down = false, lx=0, ly=0;
+    cv.addEventListener('pointerdown', function(e){ down=true; lx=e.clientX; ly=e.clientY; cv.setPointerCapture(e.pointerId); });
+    cv.addEventListener('pointermove', function(e){
+      if(!down) return;
+      var r = cv.getBoundingClientRect(), k = W/r.width;
+      vista.ox += (e.clientX-lx)*k; vista.oy += (e.clientY-ly)*k;
+      lx=e.clientX; ly=e.clientY; pintarTodo();
+    });
+    cv.addEventListener('pointerup', function(){ down=false; });
+    cv.addEventListener('pointercancel', function(){ down=false; });
+  }
+  arrastre(cvA); arrastre(cvB);
+  document.getElementById('zoom').addEventListener('input', function(){
+    vista.scale = this.value/100; pintarTodo();
+  });
+
+  // ══ Modos ══
+  var elLienzos = document.getElementById('lienzos');
+  document.getElementById('modoUno').addEventListener('click', function(){
+    comparar=false; lado='A';
+    this.classList.add('on'); document.getElementById('modoDos').classList.remove('on');
+    elLienzos.classList.remove('modo-comparar');
+    document.getElementById('marcoB').style.display='none';
+    marcarLado();
+  });
+  document.getElementById('modoDos').addEventListener('click', function(){
+    comparar=true;
+    this.classList.add('on'); document.getElementById('modoUno').classList.remove('on');
+    elLienzos.classList.add('modo-comparar');
+    document.getElementById('marcoB').style.display='block';
+    if(colorB===null){ lado='B'; }
+    marcarLado(); pintarTodo();
+  });
+  function marcarLado(){
+    document.getElementById('marcoA').classList.toggle('activo', lado==='A');
+    document.getElementById('marcoB').classList.toggle('activo', lado==='B');
+  }
+  document.getElementById('marcoA').addEventListener('click', function(e){ if(e.target.className!=='fav'){ lado='A'; marcarLado(); } });
+  document.getElementById('marcoB').addEventListener('click', function(e){ if(e.target.className!=='fav'){ lado='B'; marcarLado(); } });
+
+  // ══ Familias y tonos ══
+  var elFam = document.getElementById('familias'), elTonos = document.getElementById('tonos');
+  var famActual = 'Verdes';
+  Object.keys(FAMILIAS).forEach(function(f, i){
+    var b = document.createElement('button');
+    b.className = 'familia' + (i===0?' on':'');
+    b.textContent = f;
+    b.addEventListener('click', function(){
+      famActual = f;
+      document.querySelectorAll('.familia').forEach(function(x){x.classList.remove('on');});
+      b.classList.add('on'); renderTonos();
+    });
+    elFam.appendChild(b);
+  });
+
+  function renderTonos(){
+    elTonos.innerHTML = '';
+    FAMILIAS[famActual].forEach(function(par, idx){
+      var nombre = par[0], hex = par[1];
+      var b = document.createElement('button');
+      b.className = 'tono';
+      var sel = (lado==='A'? colorA===hex : colorB===hex);
+      if(sel) b.classList.add('on');
+      b.innerHTML = '<i style="background:'+hex+'"></i><u>'+nombre+'</u>';
+      b.addEventListener('click', function(){
+        if(lado==='A'){ colorA=hex; nombreA=nombre; document.getElementById('etqA').textContent=nombre; }
+        else { colorB=hex; nombreB=nombre; document.getElementById('etqB').textContent=nombre; }
+        document.querySelectorAll('.tono').forEach(function(x){x.classList.remove('on');});
+        b.classList.add('on');
+        pintarTodo();
+      });
+      elTonos.appendChild(b);
+    });
+  }
+  renderTonos();
+
+  // ══ Favoritos ══
+  function toggleFav(cual){
+    var hex = cual==='A'? colorA : colorB, nom = cual==='A'? nombreA : nombreB;
+    if(!hex) return;
+    var i = favs.findIndex(function(f){return f[1]===hex;});
+    if(i>=0) favs.splice(i,1); else favs.push([nom,hex]);
+    renderFavs();
+  }
+  document.getElementById('favA').addEventListener('click', function(){ toggleFav('A'); });
+  document.getElementById('favB').addEventListener('click', function(){ toggleFav('B'); });
+  function renderFavs(){
+    var caja = document.getElementById('cajaFavs'), chips = document.getElementById('favChips');
+    caja.classList.toggle('hay', favs.length>0);
+    chips.innerHTML='';
+    ['A','B'].forEach(function(c){
+      var hex = c==='A'? colorA : colorB;
+      var btn = document.getElementById('fav'+c);
+      var on = favs.some(function(f){return f[1]===hex;});
+      btn.textContent = on? '♥' : '♡';
+      btn.classList.toggle('on', on);
+    });
+    favs.forEach(function(f){
+      var ch = document.createElement('button');
+      ch.className='fav-chip';
+      ch.innerHTML = '<i style="background:'+f[1]+'"></i>'+f[0]+' ✕';
+      ch.addEventListener('click', function(){
+        favs = favs.filter(function(x){return x[1]!==f[1];});
+        renderFavs();
+      });
+      chips.appendChild(ch);
+    });
+  }
+
+  // ══ Descargar ══
+  document.getElementById('descargar').addEventListener('click', function(){
+    var n = comparar && colorB ? 2 : 1;
+    var pad = 30, cab = 90, pie = 70;
+    var out = document.createElement('canvas');
+    out.width = W*n + pad*(n+1);
+    out.height = H + cab + pie;
+    var o = out.getContext('2d');
+    o.fillStyle = '#F7F4EF'; o.fillRect(0,0,out.width,out.height);
+    o.fillStyle = '#3D2C3A';
+    o.font = 'italic 500 34px Georgia, serif';
+    o.textAlign = 'center';
+    o.fillText('Mi estudio de color', out.width/2, 52);
+    o.font = '15px sans-serif'; o.fillStyle = '#A98E5F';
+    o.fillText('T A T I  G O N Z Á L E Z  ·  C O A C H I N G  D E  I M A G E N', out.width/2, 76);
+    o.drawImage(cvA, pad, cab);
+    if(n===2) o.drawImage(cvB, pad*2+W, cab);
+    o.font = '20px sans-serif'; o.fillStyle = '#3D2C3A';
+    o.fillText(nombreA||'', pad+W/2, cab+H+34);
+    if(n===2) o.fillText(nombreB||'', pad*2+W+W/2, cab+H+34);
+    o.font = '15px sans-serif'; o.fillStyle = '#6B6461';
+    o.fillText('Descubre tu paleta completa en www.tatigonzalez.com', out.width/2, out.height-18);
+    out.toBlob(function(blob){
+      var a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = 'mi-estudio-de-color.jpg';
+      a.click();
+    }, 'image/jpeg', 0.92);
+  });
+})();
+</script>
+</body>
+</html>
