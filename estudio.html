@@ -327,14 +327,14 @@
       if(!res || !res.detections || !res.detections.length) return;
       var bb = res.detections[0].boundingBox;
       var base0 = Math.max(W/im.width, H/im.height);
-      var s = (W * 0.34) / (bb.width * base0);
+      var s = (W * 0.36) / (bb.width * base0);
       s = Math.max(1, Math.min(3, s));
       vista.scale = s;
       var dw = im.width*base0*s, dh = im.height*base0*s;
       var xc = bb.originX + bb.width/2;
       var yMenton = bb.originY + bb.height*1.03;
       vista.ox = W*0.5  - (W-dw)/2 - xc*base0*s;
-      vista.oy = H*0.50 - (H-dh)/2 - yMenton*base0*s;
+      vista.oy = H*0.44 - (H-dh)/2 - yMenton*base0*s;
       document.getElementById('zoom').value = Math.round(s*100);
     } catch(e){ /* sin detección: encuadre manual */ }
   }
@@ -370,7 +370,7 @@
 
   function dibujarPano(ctx, color){
     if(!color || !panoListo) return;
-    var dw = W * 1.22;
+    var dw = W * 1.10;
     var dh = dw * (pano.height / pano.width);
     var dx = (W - dw) / 2;
     var dy = H + 12 - dh;                 // anclado al borde inferior
