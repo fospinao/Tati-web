@@ -20,6 +20,7 @@
   "url": "https://www.tatigonzalez.com/",
   "email": "gonzaltatiana@gmail.com",
   "telephone": "+573176912708",
+  "sameAs": ["https://www.instagram.com/tati.imagen/"],
   "image": "https://www.tatigonzalez.com/assets/hero.jpg",
   "areaServed": "Medellín, Antioquia, Colombia",
   "description": "Coaching de imagen: identidad, cuerpo y apariencia trabajados como un solo sistema. Servicios personales y corporativos.",
@@ -262,7 +263,7 @@
   .b2b-hero .section-label { color: var(--rosa); }
   .b2b-hero h2 { color: var(--marfil); max-width: 560px; }
   .b2b-hero p { color: rgba(247,244,239,.85); max-width: 500px; font-size: 17.5px; }
-  .b2b-servicios { background: var(--ciruela); color: var(--marfil); }
+  .b2b-servicios { background: var(--ciruela); color: var(--marfil); padding-top: 84px; }
   .b2b-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
   .b2b-card {
     border: 1px solid rgba(247,244,239,.18);
@@ -329,6 +330,56 @@
   .banner-estudio p{color:rgba(247,244,239,.8);max-width:480px;margin:0 auto 26px}
   .banner-estudio .btn-solid{background:var(--rosa);border-color:var(--rosa)}
   .banner-estudio .btn-solid:hover{background:var(--oro);border-color:var(--oro)}
+
+  /* ---------- Programa Presencia que comunica ---------- */
+  .pqc { background: var(--marfil); padding-bottom: 40px; }
+  .pqc-cabeza { text-align: center; max-width: 720px; margin: 0 auto 40px; }
+  .pqc-cabeza h2 { font-size: clamp(40px, 7vw, 68px); line-height: 1.02; margin-bottom: 14px; }
+  .pqc-cabeza h2 em { font-style: italic; display: block; }
+  .pqc-cabeza h2 span { font-family: 'Jost', sans-serif; font-weight: 300; font-size: .52em; letter-spacing: .02em; color: var(--oro); }
+  .pqc-cabeza p { color: var(--grafito); font-size: 17.5px; }
+  .pqc-alianza { display: inline-block; margin-top: 14px; font-size: 12px; letter-spacing: .16em; text-transform: uppercase; color: var(--rosa); }
+  .pqc-duo img { aspect-ratio: 16/9; object-position: center 25%; }
+  .pqc-problema { display: grid; grid-template-columns: 1.1fr .9fr; gap: 56px; align-items: center; margin-top: 72px; }
+  .pqc-problema h3 { font-size: clamp(26px, 3.8vw, 36px); line-height: 1.15; margin-bottom: 14px; }
+  .pqc-problema h3 em { font-style: italic; color: var(--rosa); }
+  .pqc-problema > div > p { color: var(--grafito); margin-bottom: 18px; }
+  .pqc-cuando { font-size: 11.5px; letter-spacing: .22em; text-transform: uppercase; color: var(--oro); margin-bottom: 10px; }
+  .pqc-lista { list-style: none; }
+  .pqc-lista li { padding: 9px 0 9px 22px; border-top: 1px solid rgba(61,44,58,.12); position: relative; }
+  .pqc-lista li::before { content: ''; position: absolute; left: 0; top: 18px; width: 8px; height: 8px; border-radius: 50%; background: var(--rosa); }
+  .pqc-cita { background: var(--ciruela); color: var(--marfil); border-radius: 4px; padding: 36px 32px; font-family: 'Cormorant Garamond', serif; font-size: clamp(22px, 2.8vw, 27px); line-height: 1.32; font-style: italic; }
+  .pqc-pilares-titulo { text-align: center; margin: 80px auto 30px; max-width: 620px; }
+  .pqc-pilares-titulo p { color: var(--grafito); }
+  .pqc-pilares { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
+  .pqc-pilar { background: var(--blanco); border-radius: 4px; padding: 30px 26px; border-top: 3px solid var(--rosa); }
+  .pqc-pilar:nth-child(2) { border-top-color: var(--oro); }
+  .pqc-pilar:nth-child(3) { border-top-color: var(--ciruela); }
+  .pqc-pilar h3 { font-size: 28px; font-style: italic; margin-bottom: 8px; }
+  .pqc-pilar p { color: var(--grafito); font-size: 15.5px; }
+  .pqc-direccion { text-align: center; margin-top: 26px; font-family: 'Cormorant Garamond', serif; font-size: 22px; font-style: italic; }
+  .pqc-resultados { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; margin-top: 80px; }
+  .pqc-res h3 { font-size: 24px; margin-bottom: 10px; }
+  .pqc-res .pqc-lista li::before { background: var(--oro); }
+  .pqc-formato { margin-top: 64px; text-align: center; border: 1px solid rgba(169,142,95,.45); border-radius: 4px; padding: 30px 26px; }
+  .pqc-formato h3 { font-size: 26px; margin-bottom: 6px; }
+  .pqc-formato p { color: var(--grafito); max-width: 560px; margin: 0 auto; }
+  .pqc-personas { display: grid; grid-template-columns: 1fr 1fr; gap: 26px; margin-top: 72px; }
+  .pqc-persona { display: grid; grid-template-columns: 120px 1fr; gap: 20px; align-items: center; }
+  .pqc-persona img { width: 120px; height: 120px; border-radius: 50%; object-fit: cover; object-position: center 20%; }
+  .pqc-persona h3 { font-size: 24px; }
+  .pqc-persona .rol { font-size: 12px; letter-spacing: .16em; text-transform: uppercase; color: var(--oro); margin: 2px 0 6px; }
+  .pqc-persona a { color: var(--ciruela); font-size: 14px; text-decoration: none; border-bottom: 1px solid var(--rosa); }
+  .pqc-cta { text-align: center; margin-top: 64px; }
+  .pqc-cta h3 { font-size: clamp(24px, 3.6vw, 32px); max-width: 560px; margin: 0 auto 22px; }
+  .otras-lineas { font-size: 12px; letter-spacing: .26em; text-transform: uppercase; color: var(--rosa); margin-bottom: 26px; }
+  @media (max-width: 760px) {
+    .pqc-problema, .pqc-resultados, .pqc-personas { grid-template-columns: 1fr; gap: 30px; }
+    .pqc-pilares { grid-template-columns: 1fr; }
+    .pqc-duo img { aspect-ratio: 4/3; }
+    .pqc-persona { grid-template-columns: 96px 1fr; }
+    .pqc-persona img { width: 96px; height: 96px; }
+  }
 </style>
 </head>
 <body>
@@ -514,8 +565,89 @@
   </div>
 </section>
 
+<section class="pqc" id="presencia-que-comunica">
+  <div class="wrap">
+    <div class="pqc-cabeza">
+      <div class="section-label">Programa para empresas</div>
+      <h2><em>Presencia</em> <span>que comunica</span></h2>
+      <p>Programa de comunicación, imagen y presencia profesional para líderes y equipos.</p>
+      <div class="pqc-alianza">Tati González · en alianza con Manuela Tejada</div>
+    </div>
+    <div class="foto pqc-duo"><img src="assets/pqc-duo.jpg" alt="Tati González y Manuela Tejada, facilitadoras de Presencia que comunica" loading="lazy"></div>
+
+    <div class="pqc-problema">
+      <div>
+        <h3>El talento también necesita <em>saber hacerse visible.</em></h3>
+        <p>En las organizaciones hay profesionales con conocimiento y buenas ideas que no siempre logran comunicar con claridad, seguridad e impacto.</p>
+        <div class="pqc-cuando">¿Cuándo se hace evidente?</div>
+        <ul class="pqc-lista">
+          <li>Presentando o defendiendo un proyecto.</li>
+          <li>Participando en comités y conversaciones de alto nivel.</li>
+          <li>Movilizando equipos y liderando decisiones.</li>
+          <li>Representando a la compañía ante clientes, aliados o audiencias.</li>
+        </ul>
+      </div>
+      <blockquote class="pqc-cita">Cuando el mensaje y la imagen no son coherentes, las ideas pierden fuerza y la capacidad de generar confianza e influencia disminuye.</blockquote>
+    </div>
+
+    <div class="pqc-pilares-titulo">
+      <div class="section-label">La metodología</div>
+      <h2>Comunicación, imagen y presencia integradas</h2>
+      <p>Fortalecemos la manera en que líderes y equipos se expresan, se presentan y se relacionan en escenarios profesionales de alto impacto.</p>
+    </div>
+    <div class="pqc-pilares">
+      <div class="pqc-pilar"><h3>Mensaje</h3><p>Estructurar y expresar ideas con claridad, intención y capacidad de persuasión.</p></div>
+      <div class="pqc-pilar"><h3>Expresión</h3><p>Usar la voz, el lenguaje corporal, la escucha y la asertividad para comunicarse con seguridad.</p></div>
+      <div class="pqc-pilar"><h3>Presencia</h3><p>Construir una imagen profesional auténtica y coherente con el rol, el contexto y la cultura organizacional.</p></div>
+    </div>
+    <p class="pqc-direccion">No se trata solo de hablar bien o verse bien: se trata de que todo comunique en la misma dirección.</p>
+
+    <div class="pqc-resultados">
+      <div class="pqc-res">
+        <h3>Qué cambia en las personas</h3>
+        <ul class="pqc-lista">
+          <li>Más claridad y seguridad para expresar sus ideas.</li>
+          <li>Más asertividad en conversaciones y escenarios de exposición.</li>
+          <li>Coherencia entre lo que saben, lo que dicen y lo que proyectan.</li>
+          <li>Una presencia profesional auténtica, estratégica y consciente.</li>
+        </ul>
+      </div>
+      <div class="pqc-res">
+        <h3>Qué cambia en la organización</h3>
+        <ul class="pqc-lista">
+          <li>Líderes con más capacidad de influir y movilizar.</li>
+          <li>Equipos que proyectan con coherencia la cultura y los valores de la compañía.</li>
+          <li>Colaboradores mejor preparados para representar la marca.</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="pqc-formato">
+      <h3>Cada organización tiene retos distintos</h3>
+      <p>El programa se desarrolla como una experiencia integral o se adapta por módulos según los perfiles, escenarios y necesidades de cada equipo.</p>
+    </div>
+
+    <div class="pqc-personas">
+      <div class="pqc-persona">
+        <img src="assets/pqc-tati.jpg" alt="Tatiana González" loading="lazy">
+        <div><h3>Tatiana González</h3><div class="rol">Coach de imagen</div><a href="https://www.instagram.com/tati.imagen/" target="_blank" rel="noopener">@tati.imagen</a></div>
+      </div>
+      <div class="pqc-persona">
+        <img src="assets/pqc-manuela.jpg" alt="Manuela Tejada" loading="lazy">
+        <div><h3>Manuela Tejada</h3><div class="rol">Comunicación asertiva</div><a href="https://www.instagram.com/manuelatejadacomunicaciones/" target="_blank" rel="noopener">@manuelatejadacomunicaciones</a></div>
+      </div>
+    </div>
+
+    <div class="pqc-cta">
+      <h3>Conversemos sobre los retos de comunicación y presencia que hoy enfrenta tu organización.</h3>
+      <a class="btn btn-solid" href="https://wa.me/573176912708?text=Hola%20Tati,%20me%20interesa%20el%20programa%20Presencia%20que%20comunica%20para%20mi%20organizaci%C3%B3n." target="_blank" rel="noopener">Agendar una conversación</a>
+    </div>
+  </div>
+</section>
+
 <section class="b2b-servicios">
   <div class="wrap">
+    <div class="otras-lineas">Otras formas de trabajar con tu equipo</div>
     <div class="b2b-grid">
       <div class="b2b-card">
         <svg viewBox="0 0 24 24"><path d="M3 20v-1a6 6 0 0 1 6-6h0a6 6 0 0 1 6 6v1"/><circle cx="9" cy="7" r="4"/><path d="M16 3.5a4 4 0 0 1 0 7"/><path d="M21 20v-1a6 6 0 0 0-3.5-5.5"/></svg>
@@ -558,7 +690,7 @@
 
 <footer>
   <div class="wrap">
-    Tati González · Coaching de Imagen · Medellín, Colombia · <a href="estudio.html">Estudio de color</a> · <a href="https://wa.me/573176912708" target="_blank" rel="noopener">+57 317 691 2708</a> · <a href="mailto:gonzaltatiana@gmail.com">gonzaltatiana@gmail.com</a>
+    Tati González · Coaching de Imagen · Medellín, Colombia · <a href="estudio.html">Estudio de color</a> · <a href="https://www.instagram.com/tati.imagen/" target="_blank" rel="noopener">@tati.imagen</a> · <a href="https://wa.me/573176912708" target="_blank" rel="noopener">+57 317 691 2708</a> · <a href="mailto:gonzaltatiana@gmail.com">gonzaltatiana@gmail.com</a>
   </div>
 </footer>
 
@@ -578,12 +710,12 @@
     var sel = ['.section-label','h1','h2','.hero .sub','.credencial','.paleta','.hero-cta',
                '.manifiesto blockquote','.manifiesto p','.senal','.diferencia p',
                '.servicio','.paso','.b2b-card','.b2b-hero p','.b2b-galeria img',
-               '.contacto p','.contacto .btn','.foto','.b2b-cta .btn'];
+               '.contacto p','.contacto .btn','.foto','.b2b-cta .btn','.pqc-cabeza p','.pqc-alianza','.pqc-problema h3','.pqc-lista li','.pqc-cita','.pqc-pilar','.pqc-direccion','.pqc-res h3','.pqc-formato','.pqc-persona','.pqc-cta h3','.pqc-cta .btn'];
     var nodos = document.querySelectorAll(sel.join(','));
     nodos.forEach(function(n){ n.classList.add('rv'); });
 
     // Stagger: hermanos del mismo tipo dentro de un contenedor se retrasan en cascada
-    ['.senales','.pasos','.b2b-grid','.b2b-galeria .dos-col'].forEach(function(c){
+    ['.senales','.pasos','.b2b-grid','.b2b-galeria .dos-col','.pqc-pilares','.pqc-personas','.pqc-lista'].forEach(function(c){
       document.querySelectorAll(c).forEach(function(cont){
         Array.prototype.slice.call(cont.children).forEach(function(hijo, i){
           (hijo.classList.contains('rv') ? hijo : hijo.querySelector('.rv') || hijo).style.setProperty('--rvd', (i * 90) + 'ms');
