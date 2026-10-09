@@ -189,15 +189,57 @@
   .rg-check input{margin-top:2px;accent-color:var(--rosa)}
   .rg-error{color:#8E1B2F;font-size:13px;min-height:1.2em;margin:6px 0}
   .rg-caja .fila{display:flex;gap:10px;flex-wrap:wrap}
+
+  /* ---------- Menú ---------- */
+  .menu { position: sticky; top: 0; z-index: 80; background: rgba(247,244,239,.94); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); border-bottom: 1px solid rgba(61,44,58,.10); }
+  .menu-in { max-width: 1040px; margin: 0 auto; padding: 0 28px; height: 64px; display: flex; align-items: center; justify-content: space-between; gap: 20px; }
+  .menu-logo { font-family: 'Cormorant Garamond', serif; font-size: 23px; font-weight: 500; color: var(--ciruela); text-decoration: none; white-space: nowrap; }
+  .menu-logo em { font-style: italic; color: var(--rosa); }
+  .menu-links { display: flex; align-items: center; gap: 26px; list-style: none; margin: 0; padding: 0; }
+  .menu-links a { font-family: 'Jost', sans-serif; font-size: 13px; font-weight: 400; letter-spacing: .1em; text-transform: uppercase; color: var(--ciruela); text-decoration: none; padding: 6px 0; position: relative; }
+  .menu-links a::after { content: ''; position: absolute; left: 0; right: 100%; bottom: 0; height: 1px; background: var(--rosa); transition: right .25s; }
+  .menu-links a:hover::after, .menu-links a.actual::after { right: 0; }
+  .menu-links a.menu-cta { background: var(--ciruela); color: var(--marfil); padding: 10px 18px; border-radius: 2px; font-weight: 500; }
+  .menu-links a.menu-cta::after { display: none; }
+  .menu-links a.menu-cta:hover { background: var(--rosa); }
+  .menu-links a:focus-visible, .menu-boton:focus-visible { outline: 2px solid var(--oro); outline-offset: 3px; }
+  .menu-boton { display: none; background: none; border: none; width: 42px; height: 42px; cursor: pointer; position: relative; }
+  .menu-boton span { position: absolute; left: 10px; right: 10px; height: 1.5px; background: var(--ciruela); transition: transform .25s, opacity .25s, top .25s; }
+  .menu-boton span:nth-child(1) { top: 15px; } .menu-boton span:nth-child(2) { top: 20.5px; } .menu-boton span:nth-child(3) { top: 26px; }
+  .menu.abierto .menu-boton span:nth-child(1) { top: 20.5px; transform: rotate(45deg); }
+  .menu.abierto .menu-boton span:nth-child(2) { opacity: 0; }
+  .menu.abierto .menu-boton span:nth-child(3) { top: 20.5px; transform: rotate(-45deg); }
+  @media (max-width: 860px) {
+    .menu-in { height: 58px; padding: 0 20px; }
+    .menu-boton { display: block; }
+    .menu-links { position: absolute; top: 58px; left: 0; right: 0; flex-direction: column; align-items: stretch; gap: 0; background: var(--marfil); border-bottom: 1px solid rgba(61,44,58,.12); padding: 6px 20px 20px; box-shadow: 0 14px 30px rgba(61,44,58,.10); display: none; }
+    .menu.abierto .menu-links { display: flex; }
+    .menu-links li { border-top: 1px solid rgba(61,44,58,.08); }
+    .menu-links li:first-child { border-top: none; }
+    .menu-links a { display: block; padding: 15px 2px; font-size: 14px; }
+    .menu-links a::after { display: none; }
+    .menu-links li:last-child { border-top: none; margin-top: 12px; }
+    .menu-links a.menu-cta { text-align: center; padding: 15px; }
+  }
 </style>
 </head>
 <body>
+<nav class="menu" id="menu" aria-label="Menú principal">
+  <div class="menu-in">
+    <a class="menu-logo" href="/#inicio">Tati <em>González</em></a>
+    <button class="menu-boton" id="menuBoton" aria-label="Abrir menú" aria-expanded="false" aria-controls="menuLinks"><span></span><span></span><span></span></button>
+    <ul class="menu-links" id="menuLinks">
+      <li><a href="/#servicios" data-ir="servicios">Servicios</a></li>
+      <li><a href="/#proceso" data-ir="proceso">Cómo trabajo</a></li>
+      <li><a href="/#empresas" data-ir="empresas">Empresas</a></li>
+      <li><a href="estudio.html" class="actual">Estudio de color</a></li>
+      <li><a class="menu-cta" href="https://wa.me/573176912708?text=Hola%20Tati,%20vi%20tu%20p%C3%A1gina%20y%20quiero%20agendar%20una%20sesi%C3%B3n%20de%20coaching%20de%20imagen." target="_blank" rel="noopener">Agenda tu sesión</a></li>
+    </ul>
+  </div>
+</nav>
+
 
 <div class="wrap">
-  <header class="top">
-    <a class="logo" href="/">Tati <em>González</em></a>
-    <a class="volver" href="/">← Volver al sitio</a>
-  </header>
 
   <section class="intro">
     <div class="eyebrow">Experiencia gratuita</div>
@@ -929,6 +971,15 @@ try {
   });
   window.dispatchEvent(new Event('detectorListo'));
 } catch(e) { /* si falla, el estudio funciona con encuadre manual */ }
+</script>
+<script>
+  (function(){
+    var m=document.getElementById('menu'), b=document.getElementById('menuBoton');
+    function cerrar(){ m.classList.remove('abierto'); b.setAttribute('aria-expanded','false'); }
+    b.addEventListener('click', function(){ var a=m.classList.toggle('abierto'); b.setAttribute('aria-expanded', a?'true':'false'); });
+    document.querySelectorAll('#menuLinks a').forEach(function(a){ a.addEventListener('click', cerrar); });
+    document.addEventListener('keydown', function(e){ if(e.key==='Escape') cerrar(); });
+  })();
 </script>
 </body>
 </html>
