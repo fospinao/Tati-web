@@ -235,6 +235,22 @@
   .listo { display:none; text-align:center; padding:10px 0; }
   .listo h3 { font-size:32px; margin-bottom:10px; }
   .listo h3 em { font-style:italic; color:var(--rosa); }
+  .listo .gris { max-width:560px; margin:0 auto 22px; }
+  .pagos { display:grid; grid-template-columns:1fr 1fr; gap:16px; text-align:left; }
+  .pago { border:1px solid rgba(61,44,58,.15); border-radius:6px; padding:22px 20px; display:flex; flex-direction:column; }
+  .pago .tit { font-family:'Cormorant Garamond',serif; font-size:23px; font-weight:500; margin-bottom:2px; }
+  .pago .sub { font-size:13.5px; color:var(--grafito); margin-bottom:16px; }
+  .pago .btn { width:100%; text-align:center; margin-top:auto; }
+  .qr { width:150px; height:150px; margin:0 auto 14px; border-radius:4px; background:#fff; border:1px solid rgba(61,44,58,.12); object-fit:contain; }
+  .cuenta { background:var(--marfil); border-radius:4px; padding:12px 14px; font-size:14px; margin-bottom:14px; line-height:1.55; }
+  .cuenta b { font-weight:500; }
+  .copiar { background:none; border:0; color:var(--oro); font:500 12px 'Jost',sans-serif; letter-spacing:.08em; text-transform:uppercase; cursor:pointer; padding:4px 0 0; }
+  .pasos-pago { font-size:13px; color:var(--grafito); margin:0 0 14px 18px; }
+  .btn-wa { background:#25D366; border-color:#25D366; color:#fff; }
+  .btn-wa:hover { background:#1EB457; border-color:#1EB457; }
+  .aviso-pago { font-size:13px; color:var(--grafito); margin-top:18px; }
+  .pagos.solo { grid-template-columns:1fr; max-width:520px; margin:0 auto; }
+  @media (max-width:860px){ .pagos { grid-template-columns:1fr; } }
 
   /* FAQ */
   .faq { background:var(--blanco); }
@@ -457,7 +473,28 @@
       <div class="listo" id="pasoListo">
         <h3>¡Ya casi, <em id="lNombre"></em>!</h3>
         <p class="gris" id="lTexto"></p>
-        <a class="btn btn-claro" id="lWhats" target="_blank" rel="noopener">Completar mi pago por WhatsApp</a>
+        <div class="pagos">
+          <div class="pago" id="pagoBold">
+            <div class="tit">Tarjeta o PSE</div>
+            <div class="sub">Pago en línea seguro con Bold. Tu cupo se confirma al instante.</div>
+            <a class="btn" id="lBold" href="#" target="_blank" rel="noopener">Pagar $260.000 COP</a>
+          </div>
+          <div class="pago">
+            <div class="tit">Transferencia Bancolombia</div>
+            <div class="sub">Transfiere a esta cuenta desde tu app o sucursal virtual:</div>
+            <img class="qr" src="../assets/qr-bancolombia.png" alt="Código QR para pagar por Bancolombia" onerror="this.style.display='none'">
+            <div class="cuenta">
+              <b>Cuenta de ahorros Bancolombia</b><br>
+              N.° <b id="lCuenta">001-243615-83</b><br>
+              Titular: Tatiana González<br>
+              Valor: <b>$260.000 COP</b>
+              <br><button type="button" class="copiar" id="lCopiar">Copiar número de cuenta</button>
+            </div>
+            <ol class="pasos-pago"><li>Haz la transferencia.</li><li>Toma captura del comprobante.</li><li>Envíanosla por WhatsApp con el botón.</li></ol>
+            <a class="btn btn-wa" id="lWhats" target="_blank" rel="noopener">Ya pagué · Enviar comprobante</a>
+          </div>
+        </div>
+        <p class="aviso-pago">Tu cupo queda confirmado cuando recibamos el pago. ¿Dudas? <a id="lDudas" target="_blank" rel="noopener" style="color:var(--oro)">Escríbenos por WhatsApp</a>.</p>
       </div>
     </div>
   </div>
@@ -525,13 +562,21 @@
     if(err){ e.textContent = err; if(!d.fecha) document.querySelector('.fechas-grid').scrollIntoView({behavior:'smooth', block:'center'}); return; }
     e.textContent = '';
     try { fetch(HOJA_URL, { method:'POST', mode:'no-cors', headers:{'Content-Type':'text/plain;charset=utf-8'}, body:JSON.stringify(d) }); } catch(x){}
-    var primer = d.nombre.split(' ')[0];
-    var msg = 'Hola Tati, soy ' + d.nombre + '. Me inscribí al taller El Placer de Vestirte para el ' + fechaElegida + ' y quiero completar mi pago.';
+    var primer = d.nombre.split(' ')[0]; primer = primer.charAt(0).toUpperCase() + primer.slice(1).toLowerCase();
+    var msg = 'Hola Tati, soy ' + d.nombre + '. Me inscribí al taller El Placer de Vestirte para el ' + fechaElegida + '. Te envío el comprobante de la transferencia de ' + PRECIO + '.';
+    var dudas = 'Hola Tati, soy ' + d.nombre + '. Me inscribí al taller El Placer de Vestirte para el ' + fechaElegida + ' y tengo una pregunta sobre el pago.';
+    if(document.getElementById('lBold').getAttribute('href') === '#'){ document.getElementById('pagoBold').style.display='none'; document.querySelector('.pagos').classList.add('solo'); }
     document.getElementById('lNombre').textContent = primer;
-    document.getElementById('lTexto').textContent = 'Recibimos tus datos para el ' + fechaElegida + '. Para confirmar tu cupo, completa el pago de ' + PRECIO + ' por WhatsApp: te enviamos el link de pago o los datos de transferencia.';
+    document.getElementById('lTexto').textContent = 'Recibimos tus datos para el ' + fechaElegida.toLowerCase() + '. Ahora completa el pago para confirmar tu cupo.';
     document.getElementById('lWhats').href = 'https://wa.me/' + WA + '?text=' + encodeURIComponent(msg);
+    document.getElementById('lDudas').href = 'https://wa.me/' + WA + '?text=' + encodeURIComponent(dudas);
+    document.getElementById('lCopiar').onclick = function(){
+      var n = document.getElementById('lCuenta').textContent.replace(/\D/g,''), b = this;
+      try { navigator.clipboard.writeText(n).then(function(){ b.textContent = '¡Copiado!'; }); } catch(x){}
+    };
     document.getElementById('pasoDatos').style.display = 'none';
     document.getElementById('pasoListo').style.display = 'block';
+    document.getElementById('formulario').scrollIntoView({behavior:'smooth', block:'start'});
   });
 
   // Barra fija móvil: visible tras el hero y oculta en la zona de reserva
