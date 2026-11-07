@@ -481,8 +481,10 @@
         <div class="pagos">
           <div class="pago" id="pagoBold">
             <div class="tit">Tarjeta o PSE</div>
-            <div class="sub">Pago en línea seguro con Bold. Tu cupo se confirma al instante.</div>
-            <a class="btn" id="lBold" href="#" target="_blank" rel="noopener">Pagar $260.000 COP</a>
+            <div class="sub">Pago en línea seguro con Bold: tarjeta de crédito, débito o PSE.</div>
+            <ol class="pasos-pago"><li>Toca el botón y completa el pago en Bold.</li><li>Toma captura de la confirmación.</li><li>Envíala por WhatsApp a Tati.</li></ol>
+            <a class="btn" id="lBold" href="https://checkout.bold.co/payment/LNK_221G0BE8S6" target="_blank" rel="noopener">Pagar $260.000 COP con Bold</a>
+            <a class="copiar" id="lWhatsBold" target="_blank" rel="noopener" style="text-align:center;margin-top:12px;text-decoration:none">Ya pagué · Enviar confirmación</a>
           </div>
           <div class="pago">
             <div class="tit">Transferencia Bancolombia</div>
@@ -574,6 +576,7 @@
     document.getElementById('lNombre').textContent = primer;
     document.getElementById('lTexto').textContent = 'Recibimos tus datos para el ' + fechaElegida.toLowerCase() + '. Ahora completa el pago para confirmar tu cupo.';
     document.getElementById('lWhats').href = 'https://wa.me/' + WA + '?text=' + encodeURIComponent(msg);
+    document.getElementById('lWhatsBold').href = 'https://wa.me/' + WA + '?text=' + encodeURIComponent('Hola Tati, soy ' + d.nombre + '. Me inscribí al taller El Placer de Vestirte para el ' + fechaElegida + '. Ya pagué con Bold, te envío la confirmación.');
     document.getElementById('lDudas').href = 'https://wa.me/' + WA + '?text=' + encodeURIComponent(dudas);
     document.getElementById('lCopiar').onclick = function(){
       var n = document.getElementById('lCuenta').textContent.replace(/\D/g,''), b = this;
