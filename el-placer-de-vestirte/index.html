@@ -199,6 +199,13 @@
   .llevas-item b { display:block; font-family:'Cormorant Garamond',serif; font-size:22px; font-weight:500; margin-bottom:6px; color:var(--marfil); }
   .llevas-item p { font-size:14.5px; color:rgba(247,244,239,.75); margin:0; }
 
+  /* Galería */
+  .galeria { padding:0 0 84px; }
+  .galeria-grid { display:grid; grid-template-columns:1fr 1.6fr 1fr; gap:14px; align-items:stretch; }
+  .galeria-grid img { width:100%; height:100%; object-fit:cover; border-radius:3px; aspect-ratio:3/4; }
+  .galeria-grid img.ancha { aspect-ratio:auto; }
+  .galeria p { font-size:13px; color:var(--grafito); text-align:center; margin-top:14px; letter-spacing:.04em; }
+  @media (max-width:860px){ .galeria { padding-bottom:60px; } .galeria-grid { grid-template-columns:1fr 1fr; } .galeria-grid img.ancha { grid-column:1 / -1; order:-1; aspect-ratio:16/10; } }
   /* Para ti si */
   .senales { display:grid; grid-template-columns:1fr 1fr; gap:6px 44px; margin-top:10px; }
   .senal { display:flex; gap:14px; padding:14px 0; border-top:1px solid rgba(61,44,58,.12); }
@@ -383,7 +390,7 @@
 
 <section style="padding-top:0">
   <div class="wrap agenda-grid">
-    <div class="foto"><img src="../assets/telas.jpg" alt="Tati González revisando una paleta de telas de colores" loading="lazy"></div>
+    <div class="foto"><img src="../assets/taller-looks.jpg" alt="Tati González armando un look con fotografías de prendas durante un taller" loading="lazy"></div>
     <div>
       <div class="etiqueta">El taller</div>
       <h2>¿Qué haremos en <em>tres horas?</em></h2>
@@ -412,7 +419,18 @@
   </div>
 </section>
 
-<section>
+<section class="galeria" style="padding-top:84px">
+  <div class="wrap">
+    <div class="galeria-grid">
+      <img src="../assets/taller-tijeras.jpg" alt="Participante recortando prendas para su moodboard" loading="lazy">
+      <img class="ancha" src="../assets/taller-mesa.jpg" alt="Mesa del taller con fotografías de prendas, bolsos y accesorios para recortar" loading="lazy">
+      <img src="../assets/tati-presentando.jpg" alt="Tati González guiando el taller" loading="lazy">
+    </div>
+    <p>Así se vive un taller con Tati: referencias, tijeras y conversación.</p>
+  </div>
+</section>
+
+<section style="padding-top:0">
   <div class="wrap">
     <div class="etiqueta">¿Es para ti?</div>
     <h2>Este taller puede ser para ti si…</h2>
@@ -429,7 +447,7 @@
 
 <section class="tati">
   <div class="wrap tati-grid">
-    <div class="foto"><img src="../assets/hero.jpg" alt="Tatiana González, diseñadora de modas y coach de imagen" loading="lazy"></div>
+    <div class="foto"><img src="../assets/tati-retrato.jpg" alt="Tatiana González, diseñadora de modas y coach de imagen, en su estudio" loading="lazy" style="object-position:center 20%"></div>
     <div>
       <div class="etiqueta">Quién te acompaña</div>
       <h2>Una experiencia guiada por <em>Tatiana González</em></h2>
@@ -597,7 +615,7 @@
   addEventListener('scroll', revisarBarra, {passive:true}); revisarBarra();
 
   // Revelado suave
-  var nodos = document.querySelectorAll('section h2, section .etiqueta, .intro blockquote, .pasos li, .llevas-item, .senal, .tati .cita, .fecha, .faq details, .foto');
+  var nodos = document.querySelectorAll('section h2, section .etiqueta, .galeria-grid img, .intro blockquote, .pasos li, .llevas-item, .senal, .tati .cita, .fecha, .faq details, .foto');
   nodos.forEach(function(n){ n.classList.add('rv'); });
   if('IntersectionObserver' in window){
     var io = new IntersectionObserver(function(es){ es.forEach(function(x){ if(x.isIntersecting){ x.target.classList.add('visible'); io.unobserve(x.target); } }); }, {threshold:.12});
