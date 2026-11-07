@@ -347,19 +347,18 @@
   h3 { font-size:clamp(20px,2.4vw,24px) !important; }
 
   /* Logo firma */
-  .menu-logo { display:flex; flex-direction:column; align-items:flex-end; line-height:1; text-decoration:none; }
-  .menu-logo img { height:34px; width:auto; display:block; }
-  .menu-logo-sub { font-family:'Jost',sans-serif; font-size:9.5px; font-weight:400; letter-spacing:.24em; text-transform:uppercase; color:var(--ciruela); margin-top:1px; margin-right:2px; }
+  .menu-logo { display:flex; align-items:center; line-height:0; text-decoration:none; }
+  .menu-logo img { height:50px; width:auto; display:block; }
   .menu-links a { white-space:nowrap; }
-  @media (min-width:861px) and (max-width:1180px){ .menu-links { gap:18px !important; } .menu-links a { font-size:12px !important; letter-spacing:.08em !important; } .menu-logo img { height:30px; } .menu-logo-sub { font-size:8.5px; } }
-  @media (max-width:860px){ .menu-logo img { height:30px; } .menu-logo-sub { font-size:8.5px; } }
+  @media (min-width:861px) and (max-width:1180px){ .menu-links { gap:18px !important; } .menu-links a { font-size:12px !important; letter-spacing:.08em !important; } .menu-logo img { height:42px; } }
+  @media (max-width:860px){ .menu-logo img { height:44px; } }
 </style>
 </head>
 <body>
 
 <nav class="menu" id="menu" aria-label="Menú principal">
   <div class="menu-in">
-    <a class="menu-logo" href="/"><img src="/assets/logo-tati-firma.png" alt="Tati González, coach de imagen" width="843" height="140"><span class="menu-logo-sub">Coach de imagen</span></a>
+    <a class="menu-logo" href="/"><img src="/assets/logo-tati.png" alt="Tati González, coach de imagen" width="842" height="175"></a>
     <button class="menu-boton" id="menuBoton" aria-label="Abrir menú" aria-expanded="false" aria-controls="menuLinks"><span></span><span></span><span></span></button>
     <ul class="menu-links" id="menuLinks">
       <li><a href="/#servicios">Servicios</a></li>
