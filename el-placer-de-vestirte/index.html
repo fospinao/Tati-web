@@ -172,7 +172,13 @@
   .hero .sub { font-size:18px; color:var(--grafito); max-width:470px; margin-bottom:24px; }
   .datos { display:flex; flex-wrap:wrap; gap:8px; margin-bottom:28px; }
   .datos span { font-size:12.5px; letter-spacing:.05em; padding:7px 14px; border:1px solid rgba(61,44,58,.22); border-radius:20px; background:var(--blanco); }
-  .precio-hero { display:flex; flex-wrap:wrap; align-items:baseline; gap:4px 14px; margin-bottom:18px; }
+  .precio-hero { display:flex; flex-wrap:wrap; align-items:baseline; gap:4px 14px; margin-bottom:16px; }
+  .incluye-hero { background:var(--blanco); border:1px solid rgba(61,44,58,.10); border-radius:6px; padding:16px 20px 14px; margin-bottom:24px; max-width:500px; }
+  .incluye-hero .tit { font-size:11.5px; letter-spacing:.22em; text-transform:uppercase; color:var(--oro); font-weight:500; margin-bottom:10px; }
+  .incluye-hero ul { list-style:none; display:grid; grid-template-columns:1fr 1fr; gap:8px 18px; }
+  .incluye-hero li { display:flex; gap:9px; align-items:flex-start; font-size:15px; line-height:1.35; color:var(--ciruela); font-weight:400; }
+  .incluye-hero li::before { content:''; flex:0 0 16px; height:16px; margin-top:1px; border-radius:50%; background:var(--rosa) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M4.5 8.3l2.2 2.2 4.8-4.9' fill='none' stroke='white' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center/16px no-repeat; }
+  @media (max-width:420px){ .incluye-hero ul { grid-template-columns:1fr; } }
   .precio-hero strong { white-space:nowrap; }
   .precio-hero strong { font-family:'Cormorant Garamond',serif; font-size:36px; font-weight:500; }
   .precio-hero small { font-size:13px; color:var(--grafito); }
@@ -218,7 +224,7 @@
   .tati .cita { font-family:'Cormorant Garamond',serif; font-style:italic; font-size:24px; line-height:1.35; border-left:2px solid var(--rosa); padding-left:20px; margin-top:22px; }
 
   /* Fechas y reserva */
-  .fechas-grid { display:grid; grid-template-columns:1fr 1fr; gap:18px; margin:28px 0 22px; }
+  .fechas-grid { display:grid; grid-template-columns:1fr 1fr; gap:18px; margin:28px 0 28px; }
   .fecha { position:relative; display:block; cursor:pointer; background:var(--blanco); border:1.5px solid rgba(61,44,58,.15); border-radius:6px; padding:26px 24px; transition:border-color .2s, box-shadow .2s; }
   .fecha input { position:absolute; opacity:0; pointer-events:none; }
   .fecha:hover { border-color:var(--rosa); }
@@ -369,7 +375,18 @@
         <span>Quokka Coworking, El Poblado</span>
         <span>15 cupos por fecha</span>
       </div>
-      <div class="precio-hero"><strong>$260.000 COP</strong><small>por persona · incluye materiales</small></div>
+      <div class="precio-hero"><strong>$260.000 COP</strong><small>por persona</small></div>
+      <div class="incluye-hero">
+        <div class="tit">Incluye</div>
+        <ul>
+          <li>Taller presencial de 3 horas</li>
+          <li>Materiales de trabajo</li>
+          <li>Tu moodboard personal</li>
+          <li>Guía para seguir en casa</li>
+          <li>Snack delicioso</li>
+          <li>Regalo sorpresa</li>
+        </ul>
+      </div>
       <a class="btn" href="#reservar">Quiero elegir mi fecha y reservar</a>
     </div>
     <div class="foto"><img src="../assets/tati-menton.jpg" alt="Tati González, coach de imagen, sonriendo en su estudio" fetchpriority="high" style="object-position:center 25%"></div>
@@ -483,7 +500,6 @@
         <div class="det">9:00 a.m. a 12:00 m.<br>Quokka Coworking · Sede Patio Bonito<br>Tv. 5A #45-91, El Poblado · <a href="https://g.co/kgs/LRPK2G" target="_blank" rel="noopener" style="color:var(--oro)">Ver ubicación</a><br>15 cupos</div>
       </label>
     </div>
-    <p class="incluye"><b>Incluye:</b> participación en el taller de tres horas, materiales de trabajo y la creación de tu moodboard personal. Además, un snack delicioso y un regalo sorpresa.</p>
 
     <div class="formulario" id="formulario">
       <div id="pasoDatos">
