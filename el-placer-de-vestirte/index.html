@@ -408,8 +408,8 @@
   @media (max-width:420px){ .promo-pct { font-size:66px; } .promo-reloj div { min-width:58px; } .promo-reloj b { font-size:24px; } }
 </style>
 <script>
-  // Descuento real del 10% hasta hoy jueves 19 de noviembre a las 5:00 p.m. (hora Colombia)
-  var PROMO_FIN = new Date('2026-11-19T17:00:00-05:00');
+  // Descuento real del 10% hasta el viernes 20 de noviembre a las 5:00 p.m. (hora Colombia)
+  var PROMO_FIN = new Date('2026-11-20T17:00:00-05:00');
   function promoActiva(){ return new Date() < PROMO_FIN; }
   function precioVigente(){ return promoActiva() ? '$225.000 COP' : '$250.000 COP'; }
 </script>
@@ -435,7 +435,7 @@
     <div class="reloj" id="avisoReloj">
       <div><b data-u="d">0</b><i>días</i></div><div><b data-u="h">00</b><i>horas</i></div><div><b data-u="m">00</b><i>min</i></div><div><b data-u="s">00</b><i>seg</i></div>
     </div>
-    <span class="cupos" id="avisoCupos">Quedan 6 cupos</span>
+    <span class="cupos" id="avisoCupos">Quedan 4 cupos</span>
     <a class="btn-aviso" href="#reservar">Reservar mi cupo</a>
   </div>
 </div>
@@ -567,7 +567,7 @@
         <span class="marca" aria-hidden="true"></span>
         <div class="dia">Sábado</div>
         <div class="num">21 de noviembre</div>
-        <div class="det">9:00 a.m. a 1:00 p.m.<br>Quokka Coworking · Sede Patio Bonito<br>Tv. 5A #45-91, El Poblado · <a href="https://g.co/kgs/LRPK2G" target="_blank" rel="noopener" style="color:var(--oro)">Ver ubicación</a><br><span class="quedan">Quedan 6 cupos</span></div>
+        <div class="det">9:00 a.m. a 1:00 p.m.<br>Quokka Coworking · Sede Patio Bonito<br>Tv. 5A #45-91, El Poblado · <a href="https://g.co/kgs/LRPK2G" target="_blank" rel="noopener" style="color:var(--oro)">Ver ubicación</a><br><span class="quedan">Quedan 4 cupos</span></div>
       </label>
       <label class="fecha" data-fecha="2026-11-28">
         <input type="radio" name="fecha" value="Sábado 28 de noviembre">
@@ -736,7 +736,7 @@
 (function(){
   // Cuenta regresiva real al cierre de inscripciones de cada fecha (hora Colombia)
   var CIERRES = [
-    { fecha:'2026-11-21', nombre:'sábado 21', cierre:new Date('2026-11-20T23:59:59-05:00'), cupos:6 },
+    { fecha:'2026-11-21', nombre:'sábado 21', cierre:new Date('2026-11-20T23:59:59-05:00'), cupos:4 },
     { fecha:'2026-11-28', nombre:'sábado 28', cierre:new Date('2026-11-27T23:59:59-05:00'), cupos:null }
   ];
   var aviso=document.getElementById('aviso'), reloj=document.getElementById('avisoReloj'),
@@ -772,14 +772,14 @@
   <div class="promo">
     <button class="promo-cerrar" id="promoX" aria-label="Cerrar">×</button>
     <div class="promo-in">
-      <div class="promo-sello">Solo por hoy</div>
+      <div class="promo-sello">Extendido hasta mañana</div>
       <div class="promo-pct">10%<small> OFF</small></div>
       <h3 id="promoTit">en El placer de vestirte</h3>
       <div class="promo-precio"><s>$250.000</s><b>$225.000</b></div>
       <div class="promo-reloj" id="promoReloj">
         <div><b data-u="h">00</b><i>horas</i></div><div><b data-u="m">00</b><i>min</i></div><div><b data-u="s">00</b><i>seg</i></div>
       </div>
-      <p class="promo-nota">El descuento termina hoy a las 5:00 p.m.</p>
+      <p class="promo-nota">El descuento termina el viernes 20 a las 5:00 p.m.</p>
       <button class="promo-btn" id="promoIr">Reservar con descuento</button>
       <button class="promo-no" id="promoNo">Ahora no</button>
     </div>
@@ -796,12 +796,13 @@
     lista.forEach(function(t){ t.nodeValue=t.nodeValue.split(de).join(a); });
   }
   cambiarPrecios(BASE,OFERTA);
+  if(new Date() >= new Date('2026-11-20T00:00:00-05:00')){ document.querySelector('.promo-sello').textContent='Último día'; document.querySelector('.promo-nota').textContent='El descuento termina hoy a las 5:00 p.m.'; }
   var ph=document.querySelector('.precio-hero strong');
   if(ph) ph.insertAdjacentHTML('afterbegin','<span class="tachado">$250.000</span>');
   var m=document.getElementById('promo'), rel=document.getElementById('promoReloj');
   function dos(n){ return (n<10?'0':'')+n; }
   function abrir(){ m.hidden=false; requestAnimationFrame(function(){ m.classList.add('ver'); }); document.getElementById('promoIr').focus(); }
-  function cerrar(){ m.classList.remove('ver'); setTimeout(function(){ m.hidden=true; },350); try{ sessionStorage.setItem('promo10','visto'); }catch(e){} }
+  function cerrar(){ m.classList.remove('ver'); setTimeout(function(){ m.hidden=true; },350); try{ sessionStorage.setItem('promo10b','visto'); }catch(e){} }
   document.getElementById('promoX').onclick=cerrar; document.getElementById('promoNo').onclick=cerrar;
   m.addEventListener('click',function(e){ if(e.target===m) cerrar(); });
   document.addEventListener('keydown',function(e){ if(e.key==='Escape' && !m.hidden) cerrar(); });
@@ -813,7 +814,7 @@
     rel.querySelectorAll('b').forEach(function(x){ x.textContent=v[x.dataset.u]; });
   }
   tick(); var iv=setInterval(tick,1000);
-  var visto=false; try{ visto=sessionStorage.getItem('promo10')==='visto'; }catch(e){}
+  var visto=false; try{ visto=sessionStorage.getItem('promo10b')==='visto'; }catch(e){}
   if(!visto) setTimeout(abrir,1200);
 })();
 </script>
