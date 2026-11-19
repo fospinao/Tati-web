@@ -379,7 +379,40 @@
   .fecha .quedan { color:var(--rosa); font-weight:500; }
   .fecha.cerrada { opacity:.45; pointer-events:none; }
   @media (max-width:860px){ .aviso-in { padding:8px 16px; gap:6px 12px; font-size:12.5px; } }
+
+  /* Pop-up descuento */
+  .promo-fondo { position:fixed; inset:0; z-index:200; background:rgba(30,20,28,.62); backdrop-filter:blur(3px); -webkit-backdrop-filter:blur(3px); display:flex; align-items:center; justify-content:center; padding:18px; opacity:0; transition:opacity .35s; }
+  .promo-fondo[hidden] { display:none; }
+  .promo-fondo.ver { opacity:1; }
+  .promo { position:relative; width:100%; max-width:440px; border-radius:14px; overflow:hidden; color:#fff; text-align:center; background:linear-gradient(150deg,#3D2C3A 0%,#6E3F5C 55%,#C4909B 100%); box-shadow:0 30px 80px rgba(0,0,0,.4); transform:translateY(18px) scale(.97); transition:transform .4s cubic-bezier(.2,.9,.3,1.2); }
+  .promo-fondo.ver .promo { transform:none; }
+  .promo-in { padding:34px 28px 26px; }
+  .promo-cerrar { position:absolute; top:10px; right:12px; width:34px; height:34px; border:0; border-radius:50%; background:rgba(255,255,255,.15); color:#fff; font-size:20px; line-height:34px; cursor:pointer; }
+  .promo-sello { display:inline-block; font-size:11px; letter-spacing:.26em; text-transform:uppercase; color:#F3D9DF; border:1px solid rgba(255,255,255,.35); border-radius:20px; padding:5px 14px; margin-bottom:14px; }
+  .promo-pct { font-family:'Montserrat',sans-serif; font-weight:700; font-size:78px; line-height:.9; letter-spacing:-.04em; animation:pulso 1.8s ease-in-out infinite; }
+  .promo-pct small { font-size:.42em; letter-spacing:0; }
+  .promo h3 { font-family:'Montserrat',sans-serif !important; font-size:20px !important; margin:8px 0 14px; letter-spacing:-.01em; }
+  .promo-precio { margin-bottom:18px; }
+  .promo-precio s { opacity:.7; font-size:16px; margin-right:10px; }
+  .promo-precio b { font-family:'Montserrat',sans-serif; font-size:30px; }
+  .promo-reloj { display:flex; justify-content:center; gap:8px; margin:6px 0 6px; }
+  .promo-reloj div { background:rgba(255,255,255,.14); border:1px solid rgba(255,255,255,.3); border-radius:8px; min-width:66px; padding:8px 6px 6px; }
+  .promo-reloj b { display:block; font-family:'Montserrat',sans-serif; font-size:28px; line-height:1; font-variant-numeric:tabular-nums; }
+  .promo-reloj i { display:block; font-style:normal; font-size:10px; letter-spacing:.16em; text-transform:uppercase; color:#F3D9DF; margin-top:4px; }
+  .promo-nota { font-size:12.5px; color:#F3D9DF; margin:8px 0 18px; }
+  .promo-btn { display:block; width:100%; background:#fff; color:var(--ciruela); border:0; border-radius:4px; padding:15px; font:600 13px 'Jost',sans-serif; letter-spacing:.14em; text-transform:uppercase; cursor:pointer; }
+  .promo-btn:hover { background:#F7F4EF; }
+  .promo-no { background:none; border:0; color:#F3D9DF; font:400 12.5px 'Jost',sans-serif; margin-top:12px; cursor:pointer; text-decoration:underline; }
+  .tachado { opacity:.55; font-size:.6em; margin-right:8px; text-decoration:line-through; font-weight:400; }
+  @keyframes pulso { 0%,100% { transform:scale(1); } 50% { transform:scale(1.05); } }
+  @media (max-width:420px){ .promo-pct { font-size:66px; } .promo-reloj div { min-width:58px; } .promo-reloj b { font-size:24px; } }
 </style>
+<script>
+  // Descuento real del 10% hasta hoy jueves 19 de noviembre a las 5:00 p.m. (hora Colombia)
+  var PROMO_FIN = new Date('2026-11-19T17:00:00-05:00');
+  function promoActiva(){ return new Date() < PROMO_FIN; }
+  function precioVigente(){ return promoActiva() ? '$225.000 COP' : '$250.000 COP'; }
+</script>
 </head>
 <body>
 
@@ -624,7 +657,7 @@
 <script>
 (function(){
   var HOJA_URL = 'https://script.google.com/macros/s/AKfycbwVsb_S0zJgqTh1JYa85V4mBh2N6E90YPHu6g-HZP3gPFdKEgQDb9IwlbGRx8jSEZv2/exec';
-  var WA = '573176912708', PRECIO = '$250.000 COP';
+  var WA = '573176912708';
   var fechaElegida = '';
 
   // Selección de fecha
@@ -633,7 +666,7 @@
       document.querySelectorAll('.fecha').forEach(function(x){ x.classList.remove('elegida'); });
       f.classList.add('elegida'); f.querySelector('input').checked = true;
       fechaElegida = f.querySelector('input').value;
-      document.getElementById('resumen').textContent = fechaElegida + ' · ' + PRECIO;
+      document.getElementById('resumen').textContent = fechaElegida + ' · ' + precioVigente();
       document.getElementById('fError').textContent = '';
     });
   });
@@ -654,7 +687,7 @@
     e.textContent = '';
     try { fetch(HOJA_URL, { method:'POST', mode:'no-cors', headers:{'Content-Type':'text/plain;charset=utf-8'}, body:JSON.stringify(d) }); } catch(x){}
     var primer = d.nombre.split(' ')[0]; primer = primer.charAt(0).toUpperCase() + primer.slice(1).toLowerCase();
-    var msg = 'Hola Tati, soy ' + d.nombre + '. Me inscribí al taller El Placer de Vestirte para el ' + fechaElegida + '. Te envío el comprobante de la transferencia de ' + PRECIO + '.';
+    var msg = 'Hola Tati, soy ' + d.nombre + '. Me inscribí al taller El Placer de Vestirte para el ' + fechaElegida + '. Te envío el comprobante de la transferencia de ' + precioVigente() + (promoActiva() ? ' (con el 10% de descuento)' : '') + '.';
     var dudas = 'Hola Tati, soy ' + d.nombre + '. Me inscribí al taller El Placer de Vestirte para el ' + fechaElegida + ' y tengo una pregunta sobre el pago.';
     if(document.getElementById('lBold').getAttribute('href') === '#'){ document.getElementById('pagoBold').style.display='none'; document.querySelector('.pagos').classList.add('solo'); }
     document.getElementById('lNombre').textContent = primer;
@@ -732,6 +765,56 @@
     aviso.hidden=false;
   }
   ajustarTope(); addEventListener('resize',ajustarTope); tick(); setInterval(tick,1000);
+})();
+</script>
+
+<div class="promo-fondo" id="promo" hidden role="dialog" aria-modal="true" aria-labelledby="promoTit">
+  <div class="promo">
+    <button class="promo-cerrar" id="promoX" aria-label="Cerrar">×</button>
+    <div class="promo-in">
+      <div class="promo-sello">Solo por hoy</div>
+      <div class="promo-pct">10%<small> OFF</small></div>
+      <h3 id="promoTit">en El placer de vestirte</h3>
+      <div class="promo-precio"><s>$250.000</s><b>$225.000</b></div>
+      <div class="promo-reloj" id="promoReloj">
+        <div><b data-u="h">00</b><i>horas</i></div><div><b data-u="m">00</b><i>min</i></div><div><b data-u="s">00</b><i>seg</i></div>
+      </div>
+      <p class="promo-nota">El descuento termina hoy a las 5:00 p.m.</p>
+      <button class="promo-btn" id="promoIr">Reservar con descuento</button>
+      <button class="promo-no" id="promoNo">Ahora no</button>
+    </div>
+  </div>
+</div>
+<script>
+(function(){
+  if(!promoActiva()) return;
+  var BASE='$250.000 COP', OFERTA='$225.000 COP';
+  // Cambia el precio visible en la página mientras dure la promo
+  function cambiarPrecios(de,a){
+    var w=document.createTreeWalker(document.body,NodeFilter.SHOW_TEXT,null,false),n,lista=[];
+    while((n=w.nextNode())) if(n.nodeValue.indexOf(de)>-1 && !n.parentNode.closest('#promo')) lista.push(n);
+    lista.forEach(function(t){ t.nodeValue=t.nodeValue.split(de).join(a); });
+  }
+  cambiarPrecios(BASE,OFERTA);
+  var ph=document.querySelector('.precio-hero strong');
+  if(ph) ph.insertAdjacentHTML('afterbegin','<span class="tachado">$250.000</span>');
+  var m=document.getElementById('promo'), rel=document.getElementById('promoReloj');
+  function dos(n){ return (n<10?'0':'')+n; }
+  function abrir(){ m.hidden=false; requestAnimationFrame(function(){ m.classList.add('ver'); }); document.getElementById('promoIr').focus(); }
+  function cerrar(){ m.classList.remove('ver'); setTimeout(function(){ m.hidden=true; },350); try{ sessionStorage.setItem('promo10','visto'); }catch(e){} }
+  document.getElementById('promoX').onclick=cerrar; document.getElementById('promoNo').onclick=cerrar;
+  m.addEventListener('click',function(e){ if(e.target===m) cerrar(); });
+  document.addEventListener('keydown',function(e){ if(e.key==='Escape' && !m.hidden) cerrar(); });
+  document.getElementById('promoIr').onclick=function(){ cerrar(); document.getElementById('reservar').scrollIntoView({behavior:'smooth'}); };
+  function tick(){
+    var ms=PROMO_FIN-new Date();
+    if(ms<=0){ clearInterval(iv); m.hidden=true; cambiarPrecios(OFERTA,BASE); var t=document.querySelector('.tachado'); if(t) t.remove(); return; }
+    var v={h:dos(Math.floor(ms/36e5)),m:dos(Math.floor(ms/6e4)%60),s:dos(Math.floor(ms/1e3)%60)};
+    rel.querySelectorAll('b').forEach(function(x){ x.textContent=v[x.dataset.u]; });
+  }
+  tick(); var iv=setInterval(tick,1000);
+  var visto=false; try{ visto=sessionStorage.getItem('promo10')==='visto'; }catch(e){}
+  if(!visto) setTimeout(abrir,1200);
 })();
 </script>
 </body>
