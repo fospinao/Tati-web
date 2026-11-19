@@ -352,6 +352,17 @@
   .menu-links a { white-space:nowrap; }
   @media (min-width:861px) and (max-width:1180px){ .menu-links { gap:18px !important; } .menu-links a { font-size:12px !important; letter-spacing:.08em !important; } .menu-logo img { height:42px; } }
   @media (max-width:860px){ .menu-logo img { height:44px; } }
+
+  /* Banner cuenta regresiva */
+  .aviso { position:sticky; z-index:75; background:var(--ciruela); color:var(--marfil); font-size:13.5px; }
+  .aviso-in { max-width:1040px; margin:0 auto; padding:9px 28px; display:flex; align-items:center; justify-content:center; gap:10px 18px; flex-wrap:wrap; text-align:center; }
+  .aviso b { font-family:'Montserrat',sans-serif; font-weight:700; letter-spacing:.02em; font-variant-numeric:tabular-nums; color:#fff; }
+  .aviso .cupos { background:var(--rosa); color:#fff; border-radius:20px; padding:3px 11px; font-size:12px; font-weight:500; letter-spacing:.04em; }
+  .aviso a { color:var(--marfil); font-size:11.5px; font-weight:500; letter-spacing:.14em; text-transform:uppercase; text-decoration:none; border-bottom:1px solid var(--rosa); padding-bottom:1px; }
+  .aviso[hidden] { display:none; }
+  .fecha .quedan { color:var(--rosa); font-weight:500; }
+  .fecha.cerrada { opacity:.45; pointer-events:none; }
+  @media (max-width:860px){ .aviso-in { padding:8px 16px; gap:6px 12px; font-size:12.5px; } }
 </style>
 </head>
 <body>
@@ -369,6 +380,13 @@
     </ul>
   </div>
 </nav>
+<div class="aviso" id="aviso" hidden>
+  <div class="aviso-in">
+    <span id="avisoTexto">Cierran inscripciones para el sábado 21 en <b id="avisoReloj">--</b></span>
+    <span class="cupos" id="avisoCupos">Quedan 6 cupos</span>
+    <a href="#reservar">Reservar</a>
+  </div>
+</div>
 
 <header class="hero" id="inicio">
   <div class="wrap hero-grid">
@@ -497,7 +515,7 @@
         <span class="marca" aria-hidden="true"></span>
         <div class="dia">Sábado</div>
         <div class="num">21 de noviembre</div>
-        <div class="det">9:00 a.m. a 1:00 p.m.<br>Quokka Coworking · Sede Patio Bonito<br>Tv. 5A #45-91, El Poblado · <a href="https://g.co/kgs/LRPK2G" target="_blank" rel="noopener" style="color:var(--oro)">Ver ubicación</a><br>15 cupos</div>
+        <div class="det">9:00 a.m. a 1:00 p.m.<br>Quokka Coworking · Sede Patio Bonito<br>Tv. 5A #45-91, El Poblado · <a href="https://g.co/kgs/LRPK2G" target="_blank" rel="noopener" style="color:var(--oro)">Ver ubicación</a><br><span class="quedan">Quedan 6 cupos</span></div>
       </label>
       <label class="fecha" data-fecha="2026-11-28">
         <input type="radio" name="fecha" value="Sábado 28 de noviembre">
@@ -660,6 +678,42 @@
     document.querySelectorAll('#menuLinks a').forEach(function(a){ a.addEventListener('click', cerrar); });
     document.addEventListener('keydown', function(e){ if(e.key==='Escape') cerrar(); });
   })();
+</script>
+
+<script>
+(function(){
+  // Cuenta regresiva real al cierre de inscripciones de cada fecha (hora Colombia)
+  var CIERRES = [
+    { fecha:'2026-11-21', nombre:'sábado 21', cierre:new Date('2026-11-20T23:59:59-05:00'), cupos:6 },
+    { fecha:'2026-11-28', nombre:'sábado 28', cierre:new Date('2026-11-27T23:59:59-05:00'), cupos:null }
+  ];
+  var aviso=document.getElementById('aviso'), reloj=document.getElementById('avisoReloj'),
+      texto=document.getElementById('avisoTexto'), cupos=document.getElementById('avisoCupos'), menu=document.getElementById('menu');
+  function dos(n){ return (n<10?'0':'')+n; }
+  function ajustarTope(){ aviso.style.top = (menu ? menu.offsetHeight : 0) + 'px'; }
+  function tick(){
+    var ahora=new Date(), act=null;
+    CIERRES.forEach(function(c){
+      var card=document.querySelector('.fecha[data-fecha="'+c.fecha+'"]');
+      if(ahora>c.cierre && card && !card.classList.contains('cerrada')){
+        card.classList.add('cerrada'); card.querySelector('input').disabled=true;
+        var q=card.querySelector('.quedan'); if(q) q.textContent='Inscripciones cerradas';
+        else card.querySelector('.det').insertAdjacentHTML('beforeend','<br><span class="quedan">Inscripciones cerradas</span>');
+      }
+      if(!act && ahora<=c.cierre) act=c;
+    });
+    if(!act){ aviso.hidden=true; return; }
+    var ms=act.cierre-ahora, d=Math.floor(ms/864e5), h=Math.floor(ms/36e5)%24, m=Math.floor(ms/6e4)%60, sg=Math.floor(ms/1e3)%60;
+    if(!texto.dataset.para || texto.dataset.para!==act.fecha){
+      texto.dataset.para=act.fecha;
+      texto.firstChild.nodeValue='Cierran inscripciones para el '+act.nombre+' en ';
+      if(act.cupos){ cupos.hidden=false; cupos.textContent='Quedan '+act.cupos+' cupos'; } else cupos.hidden=true;
+    }
+    reloj.textContent=(d>0?d+'d ':'')+dos(h)+'h '+dos(m)+'m '+dos(sg)+'s';
+    aviso.hidden=false;
+  }
+  ajustarTope(); addEventListener('resize',ajustarTope); tick(); setInterval(tick,1000);
+})();
 </script>
 </body>
 </html>
