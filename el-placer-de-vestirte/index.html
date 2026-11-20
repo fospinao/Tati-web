@@ -366,8 +366,8 @@
   @media (max-width:420px){ .promo-pct { font-size:66px; } .promo-reloj div { min-width:58px; } .promo-reloj b { font-size:24px; } }
 </style>
 <script>
-  // Descuento real del 10% hasta el viernes 20 de noviembre a las 5:00 p.m. (hora Colombia)
-  var PROMO_FIN = new Date('2026-11-20T17:00:00-05:00');
+  // Descuento real del 10% hasta el viernes 20 de noviembre a las 10:00 p.m. (hora Colombia)
+  var PROMO_FIN = new Date('2026-11-20T22:00:00-05:00');
   function promoActiva(){ return new Date() < PROMO_FIN; }
   function precioVigente(){ return promoActiva() ? '$225.000 COP' : '$250.000 COP'; }
 </script>
@@ -551,7 +551,7 @@
             <div class="tit">Tarjeta o PSE</div>
             <div class="sub">Pago en línea seguro con Bold: tarjeta de crédito, débito o PSE.</div>
             <ol class="pasos-pago"><li>Toca el botón y completa el pago en Bold.</li><li>Toma captura de la confirmación.</li><li>Envíala por WhatsApp a Tati.</li></ol>
-            <a class="btn" id="lBold" href="#" target="_blank" rel="noopener">Pagar $250.000 COP con Bold</a>
+            <a class="btn" id="lBold" href="https://checkout.bold.co/payment/LNK_661F7DRFWN" target="_blank" rel="noopener">Pagar $250.000 COP con Bold</a>
             <a class="copiar" id="lWhatsBold" target="_blank" rel="noopener" style="text-align:center;margin-top:12px;text-decoration:none">Ya pagué · Enviar confirmación</a>
           </div>
           <div class="pago">
@@ -640,7 +640,7 @@
     var primer = d.nombre.split(' ')[0]; primer = primer.charAt(0).toUpperCase() + primer.slice(1).toLowerCase();
     var msg = 'Hola Tati, soy ' + d.nombre + '. Me inscribí al taller El Placer de Vestirte para el ' + fechaElegida + '. Te envío el comprobante de la transferencia de ' + precioVigente() + (promoActiva() ? ' (con el 10% de descuento)' : '') + '.';
     var dudas = 'Hola Tati, soy ' + d.nombre + '. Me inscribí al taller El Placer de Vestirte para el ' + fechaElegida + ' y tengo una pregunta sobre el pago.';
-    if(document.getElementById('lBold').getAttribute('href') === '#'){ document.getElementById('pagoBold').style.display='none'; document.querySelector('.pagos').classList.add('solo'); }
+    if(document.getElementById('lBold').getAttribute('href') === '#' || !promoActiva()){ document.getElementById('pagoBold').style.display='none'; document.querySelector('.pagos').classList.add('solo'); }
     document.getElementById('lNombre').textContent = primer;
     document.getElementById('lTexto').textContent = 'Recibimos tus datos para el ' + fechaElegida.toLowerCase() + '. Ahora completa el pago para confirmar tu cupo.';
     document.getElementById('lWhats').href = 'https://wa.me/' + WA + '?text=' + encodeURIComponent(msg);
@@ -729,7 +729,7 @@
       <div class="promo-reloj" id="promoReloj">
         <div><b data-u="h">00</b><i>horas</i></div><div><b data-u="m">00</b><i>min</i></div><div><b data-u="s">00</b><i>seg</i></div>
       </div>
-      <p class="promo-nota">El descuento termina el viernes 20 a las 5:00 p.m.</p>
+      <p class="promo-nota">El descuento termina hoy a las 10:00 p.m.</p>
       <button class="promo-btn" id="promoIr">Reservar con descuento</button>
       <button class="promo-no" id="promoNo">Ahora no</button>
     </div>
@@ -746,7 +746,7 @@
     lista.forEach(function(t){ t.nodeValue=t.nodeValue.split(de).join(a); });
   }
   cambiarPrecios(BASE,OFERTA);
-  if(new Date() >= new Date('2026-11-20T00:00:00-05:00')){ document.querySelector('.promo-sello').textContent='Último día'; document.querySelector('.promo-nota').textContent='El descuento termina hoy a las 5:00 p.m.'; }
+  if(new Date() >= new Date('2026-11-20T00:00:00-05:00')){ document.querySelector('.promo-sello').textContent='Último día'; document.querySelector('.promo-nota').textContent='El descuento termina hoy a las 10:00 p.m.'; }
   var ph=document.querySelector('.precio-hero strong');
   if(ph) ph.insertAdjacentHTML('afterbegin','<span class="tachado">$250.000</span>');
   var m=document.getElementById('promo'), rel=document.getElementById('promoReloj');
@@ -759,7 +759,7 @@
   document.getElementById('promoIr').onclick=function(){ cerrar(); document.getElementById('reservar').scrollIntoView({behavior:'smooth'}); };
   function tick(){
     var ms=PROMO_FIN-new Date();
-    if(ms<=0){ clearInterval(iv); m.hidden=true; cambiarPrecios(OFERTA,BASE); var t=document.querySelector('.tachado'); if(t) t.remove(); return; }
+    if(ms<=0){ clearInterval(iv); m.hidden=true; var pb=document.getElementById('pagoBold'); if(pb){ pb.style.display='none'; var pg=document.querySelector('.pagos'); if(pg) pg.classList.add('solo'); } cambiarPrecios(OFERTA,BASE); var t=document.querySelector('.tachado'); if(t) t.remove(); return; }
     var v={h:dos(Math.floor(ms/36e5)),m:dos(Math.floor(ms/6e4)%60),s:dos(Math.floor(ms/1e3)%60)};
     rel.querySelectorAll('b').forEach(function(x){ x.textContent=v[x.dataset.u]; });
   }
