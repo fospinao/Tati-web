@@ -553,6 +553,7 @@
           <div class="ancho"><label for="fNombre">Nombre completo</label><input id="fNombre" autocomplete="name"></div>
           <div><label for="fCorreo">Correo</label><input id="fCorreo" type="email" autocomplete="email"></div>
           <div><label for="fTel">WhatsApp</label><input id="fTel" type="tel" autocomplete="tel" placeholder="300 000 0000"></div>
+          <div class="ancho"><label for="fAlim">¿Alguna restricción alimenticia?</label><input id="fAlim" maxlength="120" placeholder="Alergias, vegetariana, vegana, sin gluten… o «ninguna»"><small style="display:block;font-size:12px;color:var(--grafito);margin-top:5px">Opcional. Solo la usamos para preparar el brunch.</small></div>
         </div>
         <label class="check"><input type="checkbox" id="fAutoriza"> Autorizo a Tatiana González a tratar mis datos para gestionar mi inscripción y contactarme sobre el taller, conforme a la Ley 1581 de 2012.</label>
         <div class="error" id="fError" role="alert"></div>
@@ -642,7 +643,7 @@
   document.getElementById('fEnviar').addEventListener('click', function(){
     var v = function(id){ return document.getElementById(id).value.trim(); };
     var d = { tipo:'taller', taller:'El Placer de Vestirte', fecha:fechaElegida, nombre:v('fNombre'),
-              correo:v('fCorreo').toLowerCase(), telefono:v('fTel'), autoriza:document.getElementById('fAutoriza').checked };
+              correo:v('fCorreo').toLowerCase(), telefono:v('fTel'), alimentacion:v('fAlim'), autoriza:document.getElementById('fAutoriza').checked };
     var err = '';
     if(!d.fecha) err = 'Elige la fecha del taller.';
     else if(d.nombre.length < 3) err = 'Escribe tu nombre completo.';
