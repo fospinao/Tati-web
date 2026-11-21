@@ -54,7 +54,7 @@
     "@type": "Offer",
     "price": "250000",
     "priceCurrency": "COP",
-    "availability": "https://schema.org/InStock",
+    "availability": "https://schema.org/SoldOut",
     "url": "https://www.tatigonzalez.com/el-placer-de-vestirte/#reservar",
     "validFrom": "2026-11-06"
    }
@@ -364,10 +364,18 @@
   .tachado { opacity:.55; font-size:.6em; margin-right:8px; text-decoration:line-through; font-weight:400; }
   @keyframes pulso { 0%,100% { transform:scale(1); } 50% { transform:scale(1.05); } }
   @media (max-width:420px){ .promo-pct { font-size:66px; } .promo-reloj div { min-width:58px; } .promo-reloj b { font-size:24px; } }
+
+  /* Sold out */
+  .soldout { background:linear-gradient(100deg,#3D2C3A 0%,#6E3F5C 55%,#C4909B 100%); color:#fff; text-align:center; position:relative; overflow:hidden; }
+  .soldout-in { max-width:1040px; margin:0 auto; padding:34px 28px 36px; }
+  .soldout b { display:block; font-family:'Montserrat',sans-serif; font-weight:700; font-size:clamp(54px,11vw,120px); line-height:.9; letter-spacing:-.04em; }
+  .soldout p { font-family:'Cormorant Garamond',serif; font-style:italic; font-size:clamp(22px,3vw,30px); margin:12px 0 22px; color:#F3D9DF; }
+  .soldout a { display:inline-block; background:#fff; color:var(--ciruela); text-decoration:none; font-size:12.5px; font-weight:600; letter-spacing:.14em; text-transform:uppercase; padding:14px 24px; border-radius:3px; }
+  .soldout small { display:block; margin-top:14px; font-size:12px; letter-spacing:.18em; text-transform:uppercase; color:#F3D9DF; }
 </style>
 <script>
   // Descuento real del 10% hasta el viernes 20 de noviembre a las 10:00 p.m. (hora Colombia)
-  var PROMO_FIN = new Date('2026-11-20T22:00:00-05:00');
+  var PROMO_FIN = new Date('2026-11-20T22:00:00-05:00'); // ya terminó
   function promoActiva(){ return new Date() < PROMO_FIN; }
   function precioVigente(){ return promoActiva() ? '$225.000 COP' : '$250.000 COP'; }
 </script>
@@ -387,6 +395,14 @@
     </ul>
   </div>
 </nav>
+<section class="soldout" aria-label="Cupos agotados">
+  <div class="soldout-in">
+    <b>SOLD OUT</b>
+    <p>Espera una próxima fecha</p>
+    <a href="https://wa.me/573176912708?text=Hola%20Tati%2C%20quiero%20enterarme%20de%20la%20pr%C3%B3xima%20fecha%20del%20taller%20El%20Placer%20de%20Vestirte." target="_blank" rel="noopener">Avísame primero</a>
+    <small>Gracias a todas las que reservaron su lugar para el sábado 21</small>
+  </div>
+</section>
 <div class="aviso" id="aviso" hidden>
   <div class="aviso-in">
     <div class="aviso-txt"><small>Inscripciones abiertas</small><span id="avisoTexto">Cierran inscripciones para el sábado 21</span></div>
@@ -408,7 +424,7 @@
         <span>Sábado 21 de noviembre</span>
         <span>9:00 a.m. a 1:00 p.m.</span>
         <span>Quokka Coworking, El Poblado</span>
-        <span>Último cupo</span>
+        <span>Sold out</span>
       </div>
       <div class="precio-hero"><strong>$250.000 COP</strong><small>por persona</small></div>
       <div class="incluye-hero">
@@ -422,7 +438,7 @@
           <li>Regalo sorpresa</li>
         </ul>
       </div>
-      <a class="btn" href="#reservar">Quiero reservar mi cupo</a>
+      <a class="btn" href="https://wa.me/573176912708?text=Hola%20Tati%2C%20quiero%20enterarme%20de%20la%20pr%C3%B3xima%20fecha%20del%20taller%20El%20Placer%20de%20Vestirte." target="_blank" rel="noopener">Avísame de la próxima fecha</a>
     </div>
     <div class="foto"><img src="../assets/tati-menton.jpg" alt="Tati González, coach de imagen, sonriendo en su estudio" fetchpriority="high" style="object-position:center 25%"></div>
   </div>
@@ -591,7 +607,7 @@
   <div class="wrap">
     <div class="etiqueta">Empieza con una pregunta</div>
     <h2>¿Cómo quiero sentirme y qué quiero expresar <em>con mi imagen?</em></h2>
-    <a class="btn" href="#reservar">Reservar mi cupo</a>
+    <a class="btn" href="https://wa.me/573176912708?text=Hola%20Tati%2C%20quiero%20enterarme%20de%20la%20pr%C3%B3xima%20fecha%20del%20taller%20El%20Placer%20de%20Vestirte." target="_blank" rel="noopener">Avísame de la próxima fecha</a>
     <p class="pie">Sábado 21 de noviembre · El Poblado, Medellín · 9 a.m. a 1 p.m. · $250.000 COP</p>
   </div>
 </section>
@@ -601,8 +617,8 @@
 </footer>
 
 <div class="barra" id="barra" aria-hidden="true">
-  <div><b>$250.000 COP</b><small>Sábado 21 nov · último cupo</small></div>
-  <a class="btn" href="#reservar" tabindex="-1">Reservar</a>
+  <div><b>$250.000 COP</b><small>Sold out · espera una próxima fecha</small></div>
+  <a class="btn" href="https://wa.me/573176912708?text=Hola%20Tati%2C%20quiero%20enterarme%20de%20la%20pr%C3%B3xima%20fecha%20del%20taller%20El%20Placer%20de%20Vestirte." target="_blank" rel="noopener" tabindex="-1">Avísame</a>
 </div>
 
 <script>
@@ -687,7 +703,7 @@
 (function(){
   // Cuenta regresiva real al cierre de inscripciones de cada fecha (hora Colombia)
   var CIERRES = [
-    { fecha:'2026-11-21', nombre:'sábado 21', cierre:new Date('2026-11-20T23:59:59-05:00'), cupos:1 }
+    { fecha:'2026-11-21', nombre:'sábado 21', cierre:new Date('2026-11-20T22:30:00-05:00'), cupos:1 }
   ];
   var aviso=document.getElementById('aviso'), reloj=document.getElementById('avisoReloj'),
       texto=document.getElementById('avisoTexto'), cupos=document.getElementById('avisoCupos'), menu=document.getElementById('menu');
@@ -699,8 +715,8 @@
       var card=document.querySelector('.fecha[data-fecha="'+c.fecha+'"]');
       if(ahora>c.cierre && card && !card.classList.contains('cerrada')){
         card.classList.add('cerrada'); card.querySelector('input').disabled=true;
-        var q=card.querySelector('.quedan'); if(q) q.textContent='Inscripciones cerradas';
-        else card.querySelector('.det').insertAdjacentHTML('beforeend','<br><span class="quedan">Inscripciones cerradas</span>');
+        var q=card.querySelector('.quedan'); if(q) q.textContent='Sold out · Cupos agotados';
+        else card.querySelector('.det').insertAdjacentHTML('beforeend','<br><span class="quedan">Sold out · Cupos agotados</span>');
       }
       if(!act && ahora<=c.cierre) act=c;
     });
@@ -776,9 +792,9 @@
   function cerrarInscripciones(){
     var f=document.getElementById('formulario'); if(!f || f.dataset.cerrado) return; f.dataset.cerrado='1';
     var msg=encodeURIComponent('Hola Tati, quiero enterarme de la próxima fecha del taller El Placer de Vestirte.');
-    f.innerHTML='<div style="text-align:center;padding:10px 0"><h3 style="margin-bottom:8px">Inscripciones cerradas</h3><p class="gris" style="margin-bottom:18px">Los cupos para esta fecha ya cerraron. Escríbenos y te avisamos cuando abramos la próxima.</p><a class="btn btn-claro" target="_blank" rel="noopener" href="https://wa.me/573176912708?text='+msg+'">Avísame de la próxima fecha</a></div>';
+    f.innerHTML='<div style="text-align:center;padding:14px 0"><div style="font-family:Montserrat,sans-serif;font-weight:700;font-size:40px;letter-spacing:-.02em;color:var(--ciruela);line-height:1">SOLD OUT</div><p class="gris" style="margin:12px 0 20px">Los cupos para el sábado 21 se agotaron. Espera una próxima fecha: escríbenos y te avisamos primero.</p><a class="btn btn-claro" target="_blank" rel="noopener" href="'+'https://wa.me/573176912708?text=Hola%20Tati%2C%20quiero%20enterarme%20de%20la%20pr%C3%B3xima%20fecha%20del%20taller%20El%20Placer%20de%20Vestirte.'+'">Avísame de la próxima fecha</a></div>';
   }
-  if(new Date() > new Date('2026-11-20T23:59:59-05:00')) cerrarInscripciones();
+  cerrarInscripciones();
 </script>
 </body>
 </html>
