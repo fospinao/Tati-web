@@ -393,7 +393,7 @@
     <div class="reloj" id="avisoReloj">
       <div><b data-u="d">0</b><i>días</i></div><div><b data-u="h">00</b><i>horas</i></div><div><b data-u="m">00</b><i>min</i></div><div><b data-u="s">00</b><i>seg</i></div>
     </div>
-    <span class="cupos" id="avisoCupos">Quedan 2 cupos</span>
+    <span class="cupos" id="avisoCupos">¡Último cupo!</span>
     <a class="btn-aviso" href="#reservar">Reservar mi cupo</a>
   </div>
 </div>
@@ -408,7 +408,7 @@
         <span>Sábado 21 de noviembre</span>
         <span>9:00 a.m. a 1:00 p.m.</span>
         <span>Quokka Coworking, El Poblado</span>
-        <span>Últimos cupos</span>
+        <span>Último cupo</span>
       </div>
       <div class="precio-hero"><strong>$250.000 COP</strong><small>por persona</small></div>
       <div class="incluye-hero">
@@ -525,7 +525,7 @@
         <span class="marca" aria-hidden="true"></span>
         <div class="dia">Sábado</div>
         <div class="num">21 de noviembre</div>
-        <div class="det">9:00 a.m. a 1:00 p.m.<br>Quokka Coworking · Sede Patio Bonito<br>Tv. 5A #45-91, El Poblado · <a href="https://g.co/kgs/LRPK2G" target="_blank" rel="noopener" style="color:var(--oro)">Ver ubicación</a><br><span class="quedan">Quedan 2 cupos</span></div>
+        <div class="det">9:00 a.m. a 1:00 p.m.<br>Quokka Coworking · Sede Patio Bonito<br>Tv. 5A #45-91, El Poblado · <a href="https://g.co/kgs/LRPK2G" target="_blank" rel="noopener" style="color:var(--oro)">Ver ubicación</a><br><span class="quedan">¡Último cupo!</span></div>
       </label>
     </div>
 
@@ -601,7 +601,7 @@
 </footer>
 
 <div class="barra" id="barra" aria-hidden="true">
-  <div><b>$250.000 COP</b><small>Sábado 21 nov · últimos cupos</small></div>
+  <div><b>$250.000 COP</b><small>Sábado 21 nov · último cupo</small></div>
   <a class="btn" href="#reservar" tabindex="-1">Reservar</a>
 </div>
 
@@ -687,7 +687,7 @@
 (function(){
   // Cuenta regresiva real al cierre de inscripciones de cada fecha (hora Colombia)
   var CIERRES = [
-    { fecha:'2026-11-21', nombre:'sábado 21', cierre:new Date('2026-11-20T23:59:59-05:00'), cupos:2 }
+    { fecha:'2026-11-21', nombre:'sábado 21', cierre:new Date('2026-11-20T23:59:59-05:00'), cupos:1 }
   ];
   var aviso=document.getElementById('aviso'), reloj=document.getElementById('avisoReloj'),
       texto=document.getElementById('avisoTexto'), cupos=document.getElementById('avisoCupos'), menu=document.getElementById('menu');
@@ -709,7 +709,7 @@
     if(!texto.dataset.para || texto.dataset.para!==act.fecha){
       texto.dataset.para=act.fecha;
       texto.textContent='Cierran inscripciones para el '+act.nombre;
-      if(act.cupos){ cupos.hidden=false; cupos.textContent='Quedan '+act.cupos+' cupos'; } else cupos.hidden=true;
+      if(act.cupos){ cupos.hidden=false; cupos.textContent= act.cupos===1 ? '¡Último cupo!' : 'Quedan '+act.cupos+' cupos'; } else cupos.hidden=true;
     }
     var v={d:d,h:dos(h),m:dos(m),s:dos(sg)}; reloj.querySelectorAll('b').forEach(function(x){ x.textContent=v[x.dataset.u]; }); reloj.firstElementChild.style.display = d>0 ? '' : 'none';
     aviso.hidden=false;
