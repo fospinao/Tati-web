@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>¿Cómo viviste el taller? · Tati González</title>
+<meta name="robots" content="noindex, nofollow">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='46' fill='%233D2C3A'/><text x='50' y='66' font-size='52' text-anchor='middle' fill='%23F7F4EF' font-family='Georgia'>T</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root { --marfil:#F7F4EF; --ciruela:#3D2C3A; --rosa:#C4909B; --oro:#A98E5F; --grafito:#6B6461; --blanco:#FFFFFF; }
+  * { box-sizing:border-box; margin:0; padding:0; }
+  body { background:var(--marfil); color:var(--ciruela); font-family:'Jost',sans-serif; font-weight:300; line-height:1.55; font-size:16.5px; }
+  h1,h2,h3 { font-family:'Montserrat',sans-serif; font-weight:700; letter-spacing:-.02em; line-height:1.15; }
+  em { font-style:italic; color:var(--rosa); }
+  .top { padding:22px 20px 0; text-align:center; }
+  .top img { height:46px; width:auto; }
+  .wrap { max-width:640px; margin:0 auto; padding:28px 20px 70px; }
+  .intro { text-align:center; margin-bottom:30px; }
+  .etiqueta { font-size:12px; letter-spacing:.26em; text-transform:uppercase; color:var(--oro); font-weight:500; margin-bottom:14px; }
+  .intro h1 { font-size:clamp(30px,6vw,42px); margin-bottom:14px; }
+  .intro p { color:var(--grafito); max-width:480px; margin:0 auto; }
+  .q { background:var(--blanco); border:1px solid rgba(61,44,58,.10); border-radius:8px; padding:22px 20px; margin-bottom:16px; }
+  .q > .tit { font-weight:500; font-size:17px; margin-bottom:4px; display:block; }
+  .q > .ayuda { font-size:14px; color:var(--grafito); margin-bottom:14px; display:block; }
+  .num { color:var(--oro); font-weight:500; margin-right:6px; }
+  .req { color:var(--rosa); }
+  /* Estrellas */
+  .estrellas { display:flex; gap:6px; flex-direction:row-reverse; justify-content:flex-end; }
+  .estrellas input { position:absolute; opacity:0; pointer-events:none; }
+  .estrellas label { font-size:38px; line-height:1; color:#E2D9D3; cursor:pointer; transition:color .15s, transform .15s; }
+  .estrellas label:hover, .estrellas label:hover ~ label, .estrellas input:checked ~ label { color:var(--oro); }
+  .estrellas input:focus-visible + label { outline:2px solid var(--oro); outline-offset:2px; }
+  /* NPS */
+  .nps { display:grid; grid-template-columns:repeat(11,1fr); gap:5px; }
+  .nps input, .chips input, .grid input { position:absolute; opacity:0; pointer-events:none; }
+  .nps label { text-align:center; padding:10px 0; border:1px solid rgba(61,44,58,.2); border-radius:4px; cursor:pointer; font-weight:400; font-size:15px; }
+  .nps input:checked + label { background:var(--ciruela); color:var(--marfil); border-color:var(--ciruela); }
+  .nps-ext { display:flex; justify-content:space-between; font-size:12.5px; color:var(--grafito); margin-top:6px; }
+  @media (max-width:420px){ .nps { grid-template-columns:repeat(6,1fr); } }
+  textarea, input[type=text], input[type=tel] { width:100%; font:inherit; font-weight:400; color:var(--ciruela); border:1px solid rgba(61,44,58,.22); border-radius:4px; padding:12px 14px; background:var(--marfil); }
+  textarea { min-height:96px; resize:vertical; }
+  textarea:focus, input:focus { outline:2px solid var(--oro); outline-offset:1px; }
+  /* Calificación por aspecto */
+  .grid { display:grid; gap:12px; }
+  .fila { display:grid; grid-template-columns:1fr auto; gap:10px; align-items:center; }
+  .fila .asp { font-weight:400; font-size:15.5px; }
+  .opc { display:flex; gap:5px; }
+  .opc label { font-size:13px; padding:7px 10px; border:1px solid rgba(61,44,58,.2); border-radius:16px; cursor:pointer; white-space:nowrap; }
+  .opc input:checked + label { background:var(--rosa); border-color:var(--rosa); color:#fff; }
+  @media (max-width:520px){ .fila { grid-template-columns:1fr; gap:6px; } }
+  /* Chips multi y únicos */
+  .chips { display:flex; flex-wrap:wrap; gap:8px; }
+  .chips label { font-size:14.5px; padding:9px 14px; border:1px solid rgba(61,44,58,.2); border-radius:20px; cursor:pointer; font-weight:400; }
+  .chips input:checked + label { background:var(--ciruela); color:var(--marfil); border-color:var(--ciruela); }
+  .nps input:focus-visible + label, .opc input:focus-visible + label, .chips input:focus-visible + label { outline:2px solid var(--oro); outline-offset:2px; }
+  .dos { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+  .dos label { font-size:14px; color:var(--grafito); display:block; margin-bottom:5px; }
+  @media (max-width:520px){ .dos { grid-template-columns:1fr; } }
+  .btn { display:block; width:100%; padding:17px 30px; font-family:'Jost',sans-serif; font-size:14px; font-weight:500; letter-spacing:.13em; text-transform:uppercase; text-decoration:none; text-align:center; border-radius:2px; border:1px solid var(--ciruela); background:var(--ciruela); color:var(--marfil); cursor:pointer; transition:background .25s, border-color .25s; }
+  .btn:hover { background:var(--rosa); border-color:var(--rosa); }
+  .btn[disabled] { opacity:.6; cursor:wait; }
+  .error { color:#A3424F; font-weight:400; text-align:center; margin:12px 0; min-height:1em; }
+  .privacidad { font-size:13px; color:var(--grafito); text-align:center; margin-top:14px; }
+  /* Gracias */
+  .gracias { display:none; text-align:center; }
+  .gracias h1 { font-size:clamp(30px,6vw,42px); margin-bottom:12px; }
+  .gracias > p { color:var(--grafito); max-width:460px; margin:0 auto 26px; }
+  .regalo { background:var(--ciruela); color:var(--marfil); border-radius:10px; padding:30px 24px; margin-bottom:18px; }
+  .regalo .pct { font-family:'Montserrat',sans-serif; font-weight:700; font-size:64px; line-height:1; color:var(--rosa); letter-spacing:-.04em; }
+  .regalo h2 { font-size:22px; margin:8px 0 10px; }
+  .regalo p { opacity:.85; max-width:420px; margin:0 auto 18px; font-size:15.5px; }
+  .codigo { display:inline-block; font-family:'Montserrat',sans-serif; font-weight:700; letter-spacing:.14em; font-size:20px; border:1.5px dashed var(--rosa); padding:9px 20px; border-radius:4px; margin-bottom:20px; }
+  .regalo .btn { background:var(--rosa); border-color:var(--rosa); color:#fff; max-width:340px; margin:0 auto; }
+  .regalo .btn:hover { background:var(--oro); border-color:var(--oro); }
+  .vence { font-size:13px; opacity:.7; margin-top:12px; }
+</style>
+</head>
+<body>
+<div class="top"><a href="/"><img src="/assets/logo-tati.png" alt="Tati González, coach de imagen" width="842" height="175"></a></div>
+
+<main class="wrap">
+  <form id="encuesta" novalidate>
+    <div class="intro">
+      <div class="etiqueta">El placer de vestirte · <span id="fechaTxt">Sábado 21 de noviembre</span></div>
+      <h1>¿Cómo viviste el <em>taller</em>?</h1>
+      <p><span id="saludo">Gracias por estar.</span> Tu opinión me ayuda a que cada taller sea mejor. Son 8 preguntas y toma unos 3 minutos.</p>
+    </div>
+
+    <fieldset class="q" style="border:1px solid rgba(61,44,58,.10)">
+      <legend class="tit" style="float:left;width:100%"><span class="num">1</span>¿Qué tan satisfecha quedaste con el taller? <span class="req">*</span></legend>
+      <div class="estrellas" style="clear:both;padding-top:10px">
+        <input type="radio" name="satisfaccion" id="s5" value="5"><label for="s5" title="5 de 5">★</label>
+        <input type="radio" name="satisfaccion" id="s4" value="4"><label for="s4" title="4 de 5">★</label>
+        <input type="radio" name="satisfaccion" id="s3" value="3"><label for="s3" title="3 de 5">★</label>
+        <input type="radio" name="satisfaccion" id="s2" value="2"><label for="s2" title="2 de 5">★</label>
+        <input type="radio" name="satisfaccion" id="s1" value="1"><label for="s1" title="1 de 5">★</label>
+      </div>
+    </fieldset>
+
+    <fieldset class="q" style="border:1px solid rgba(61,44,58,.10)">
+      <legend class="tit" style="float:left;width:100%"><span class="num">2</span>¿Qué tan probable es que recomiendes el taller a una amiga? <span class="req">*</span></legend>
+      <div class="nps" id="nps" style="clear:both;padding-top:12px"></div>
+      <div class="nps-ext"><span>Nada probable</span><span>Muy probable</span></div>
+    </fieldset>
+
+    <div class="q">
+      <label class="tit" for="gusto"><span class="num">3</span>¿Qué fue lo que más te gustó?</label>
+      <span class="ayuda">Un momento, un ejercicio, algo que descubriste de ti.</span>
+      <textarea id="gusto" maxlength="1000"></textarea>
+    </div>
+
+    <div class="q">
+      <label class="tit" for="mejorar"><span class="num">4</span>¿Qué mejorarías?</label>
+      <span class="ayuda">Todo comentario suma, con toda confianza.</span>
+      <textarea id="mejorar" maxlength="1000"></textarea>
+    </div>
+
+    <div class="q">
+      <span class="tit"><span class="num">5</span>¿Cómo calificas cada parte?</span>
+      <span class="ayuda">&nbsp;</span>
+      <div class="grid" id="aspectos"></div>
+    </div>
+
+    <fieldset class="q" style="border:1px solid rgba(61,44,58,.10)">
+      <legend class="tit" style="float:left;width:100%"><span class="num">6</span>¿Te gustaría seguir trabajando tu imagen conmigo?</legend>
+      <span class="ayuda" style="clear:both;padding-top:4px">Puedes elegir varias.</span>
+      <div class="chips" id="interes"></div>
+    </fieldset>
+
+    <div class="q">
+      <label class="tit" for="testimonio"><span class="num">7</span>Si tuvieras que contarle a alguien cómo fue el taller, ¿qué le dirías?</label>
+      <span class="ayuda">Con tu permiso, tus palabras pueden inspirar a otras mujeres a darse este espacio.</span>
+      <textarea id="testimonio" maxlength="1000"></textarea>
+    </div>
+
+    <fieldset class="q" style="border:1px solid rgba(61,44,58,.10)">
+      <legend class="tit" style="float:left;width:100%"><span class="num">8</span>¿Podemos publicar tu comentario?</legend>
+      <div class="chips" style="clear:both;padding-top:12px">
+        <input type="radio" name="permiso" id="p1" value="Sí, con mi nombre"><label for="p1">Sí, con mi nombre</label>
+        <input type="radio" name="permiso" id="p2" value="Sí, solo con mi inicial"><label for="p2">Sí, solo con mi inicial</label>
+        <input type="radio" name="permiso" id="p3" value="No"><label for="p3">Prefiero que no</label>
+      </div>
+    </fieldset>
+
+    <div class="q">
+      <span class="tit">Tus datos <span style="font-weight:300;color:var(--grafito);font-size:15px">(opcional)</span></span>
+      <span class="ayuda">Si quieres que te contacte o para firmar tu comentario.</span>
+      <div class="dos">
+        <div><label for="nombre">Nombre</label><input type="text" id="nombre" maxlength="80" autocomplete="name"></div>
+        <div><label for="tel">WhatsApp</label><input type="tel" id="tel" maxlength="20" autocomplete="tel" inputmode="tel"></div>
+      </div>
+    </div>
+
+    <div class="error" id="error" role="alert"></div>
+    <button class="btn" type="submit" id="enviar">Enviar mis respuestas</button>
+    <p class="privacidad">Tus respuestas solo las ve Tati y se usan para mejorar los talleres.</p>
+  </form>
+
+  <section class="gracias" id="gracias" aria-live="polite">
+    <div class="etiqueta">Respuestas recibidas</div>
+    <h1>¡Gracias, <em id="gNombre">de corazón</em>!</h1>
+    <p>Leo cada respuesta. Me ayuda muchísimo a seguir creando espacios como este.</p>
+    <div class="regalo">
+      <div class="pct">10%</div>
+      <h2>de descuento en Reinicia tu imagen</h2>
+      <p>Mi programa completo de acompañamiento en coaching de imagen: 8 semanas para construir una imagen que se sienta como tú.</p>
+      <div class="codigo">TALLER10</div>
+      <a class="btn" id="lWa" target="_blank" rel="noopener" href="#">Quiero mi descuento</a>
+      <div class="vence">Válido hasta el <span id="vence">6 de diciembre de 2026</span>.</div>
+    </div>
+  </section>
+</main>
+
+<script>
+  // Mismo web app de la hoja "registros tati.imagen"
+  var HOJA_URL = 'https://script.google.com/macros/s/AKfycbwVsb_S0zJgqTh1JYa85V4mBh2N6E90YPHu6g-HZP3gPFdKEgQDb9IwlbGRx8jSEZv2/exec';
+  var TALLER = 'El Placer de Vestirte';
+  var VENCE = '6 de diciembre de 2026';
+  var WHATSAPP = '573176912708';
+
+  var qs = new URLSearchParams(location.search);
+  var FECHA = (qs.get('f') || 'Sábado 21 de noviembre').slice(0, 60);
+  var nombreUrl = (qs.get('n') || '').trim().slice(0, 40);
+  document.getElementById('fechaTxt').textContent = FECHA;
+  document.getElementById('vence').textContent = VENCE;
+  if (nombreUrl) {
+    document.getElementById('saludo').textContent = 'Hola, ' + nombreUrl + '. Gracias por estar.';
+    document.getElementById('nombre').value = nombreUrl;
+  }
+
+  // NPS 0-10
+  var nps = document.getElementById('nps');
+  for (var i = 0; i <= 10; i++) {
+    nps.insertAdjacentHTML('beforeend', '<input type="radio" name="nps" id="n' + i + '" value="' + i + '"><label for="n' + i + '">' + i + '</label>');
+  }
+
+  // Calificación por aspecto
+  var ASPECTOS = [['contenido','Contenido'], ['duracion','Duración (4 horas)'], ['lugar','Lugar'], ['brunch','Brunch'], ['materiales','Materiales']];
+  var NIVELES = ['Excelente', 'Bien', 'Regular'];
+  var asp = document.getElementById('aspectos');
+  ASPECTOS.forEach(function (a) {
+    var h = '<div class="fila" role="radiogroup" aria-label="' + a[1] + '"><span class="asp">' + a[1] + '</span><div class="opc">';
+    NIVELES.forEach(function (n, j) {
+      var id = a[0] + j;
+      h += '<input type="radio" name="' + a[0] + '" id="' + id + '" value="' + n + '"><label for="' + id + '">' + n + '</label>';
+    });
+    asp.insertAdjacentHTML('beforeend', h + '</div></div>');
+  });
+
+  // Intereses (varias)
+  var INTERESES = ['Asesoría de imagen personal', 'Colorimetría', 'Análisis de rostro y cuerpo', 'Clóset detox', 'Personal shopper', 'Otro taller', 'Nada por ahora'];
+  var int = document.getElementById('interes');
+  INTERESES.forEach(function (t, j) {
+    int.insertAdjacentHTML('beforeend', '<input type="checkbox" name="interes" id="i' + j + '" value="' + t + '"><label for="i' + j + '">' + t + '</label>');
+  });
+  // "Nada por ahora" excluye las demás
+  int.addEventListener('change', function (e) {
+    var nada = document.getElementById('i' + (INTERESES.length - 1));
+    if (e.target === nada && nada.checked) {
+      int.querySelectorAll('input').forEach(function (c) { if (c !== nada) c.checked = false; });
+    } else if (e.target !== nada && e.target.checked) { nada.checked = false; }
+  });
+
+  function radio(n) { var r = document.querySelector('input[name="' + n + '"]:checked'); return r ? r.value : ''; }
+  function v(id) { return document.getElementById(id).value.trim(); }
+
+  document.getElementById('encuesta').addEventListener('submit', function (e) {
+    e.preventDefault();
+    var err = document.getElementById('error');
+    var d = {
+      tipo: 'encuesta', taller: TALLER, fecha: FECHA,
+      satisfaccion: radio('satisfaccion'), nps: radio('nps'),
+      gusto: v('gusto'), mejorar: v('mejorar'),
+      contenido: radio('contenido'), duracion: radio('duracion'), lugar: radio('lugar'),
+      brunch: radio('brunch'), materiales: radio('materiales'),
+      interes: Array.prototype.map.call(document.querySelectorAll('input[name="interes"]:checked'), function (c) { return c.value; }).join(', '),
+      testimonio: v('testimonio'), permiso: radio('permiso'),
+      nombre: v('nombre'), telefono: v('tel')
+    };
+    if (!d.satisfaccion) { err.textContent = 'Cuéntanos cuántas estrellas le das al taller (pregunta 1).'; return; }
+    if (d.nps === '') { err.textContent = 'Elige del 0 al 10 qué tan probable es que lo recomiendes (pregunta 2).'; return; }
+    err.textContent = '';
+    var b = document.getElementById('enviar');
+    b.disabled = true; b.textContent = 'Enviando…';
+    fetch(HOJA_URL, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(d) })
+      .then(listo)
+      .catch(function () {
+        b.disabled = false; b.textContent = 'Enviar mis respuestas';
+        err.textContent = 'No pudimos enviar tus respuestas. Revisa tu conexión e inténtalo de nuevo.';
+      });
+
+    function listo() {
+      var primer = (d.nombre || nombreUrl).split(' ')[0];
+      if (primer) document.getElementById('gNombre').textContent = primer;
+      var msg = 'Hola Tati, respondí la encuesta del taller El placer de vestirte y quiero usar mi código TALLER10 para Reinicia tu imagen.';
+      document.getElementById('lWa').href = 'https://wa.me/' + WHATSAPP + '?text=' + encodeURIComponent(msg);
+      document.getElementById('encuesta').style.display = 'none';
+      document.getElementById('gracias').style.display = 'block';
+      window.scrollTo(0, 0);
+    }
+  });
+</script>
+</body>
+</html>
